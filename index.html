@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="/src/styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MJ Auto</title>
+  <script type="module" src="/src/main.ts" defer></script>
+</head>
+
+<body>
+<div class="container">
+  <form id="prompt-form">
+    <label for="prompt-input">Write the prompts in separate lines:</label>
+    <textarea id="prompt-input" type="text" placeholder="new prompt..." rows="4"></textarea>
+    <!-- <label>Options</label>
+    <div class="row">
+      <label for="engine">Engine:</label>
+      <select id="engine">
+        <option value="MJ51" default>Mj 5.1</option>
+        <option value="MJ50">Mj 5</option>
+        <option value="MJ40">Mj 4</option>
+      </select>
+      <label for="resolution">Resolution:</label>
+      <select id="resolution">
+        <option value="1024" default>standard</option>
+        <option value="2048" disabled>upscaled (Mj 4)</option>
+      </select>
+      <label for="download">Download:</label>
+      <select id="download">
+        <option value="original" default>Original</option>
+        <option value="upscaled" disabled>Upscaled (Mj 4)</option>
+        <option value="both" disabled>Both</option>
+      </select>
+    </div>
+    <div class="row">
+      <label for="ratio">Ratio:</label>
+      <select id="ratio">
+        <option value="11" default>1:1 (square)</option>
+      </select>
+      <label for="styling">Styling</label>
+      <input type="range" min="1" max="1000" value="500" class="slider" id="style">
+      <label for="chaos">Chaos</label>
+      <input type="range" min="1" max="100" value="50" class="slider" id="chaos">
+    </div> -->
+    <label>Add suffix:</label>
+    <input id="prompt-suffix" type="text" placeholder="-suffix" />
+    <button id="send-prompt" type="button">Send</button>
+  </form>
+
+  <div class="spacer"></div>
+  <label>or select a text file with prepared prompts:</label>
+  <input id="file-path-input" placeholder="Selected file path..." type="text" readonly style="display: block"/>
+  <div class="row">
+    <button id="select-file">Browse</button>
+    <button id="import-file-path" type="button" disabled>Import and process</button>
+  </div>
+
+  <div class="spacer"></div>
+  <label>Your files will be downloaded to this location:</label>
+  <input id="dir-path-input" type="text" value="/" readonly />
+  <div class="row">
+    <button id="open-dir" type="button">Open this folder</button>
+    <button id="submit-dir-path" type="button">Change location</button>
+  </div>
+
+  <div id="footer" class="row">
+    <div class="status">Bot: starting...</div>
+    <div class="counters">Jobs queued: 0, running: 0, done: 0</div>
+  </div>
+</div>
+</body>
+</html>
