@@ -112,14 +112,14 @@ async function updateStatus() {
   let counters: String = "0, 0, 0";
   try {
     [status, counters] = await invoke('get_status');
-    console.log("counters: " + counters);
+    // console.log("counters: " + counters);
 
   } catch (error) {
     console.error('Error fetching status', error);
   }
 
   if (status) {
-    console.log("counters: " + counters);
+    // console.log("counters: " + counters);
     [lastCounter1, lastCounter2, lastCounter3] = counters.split(',');
     lastStatus = status;
   } else {
@@ -148,12 +148,20 @@ async function startApiWithRetry(attempts: number, delayTime: number) {
   throw new Error('API failed to start after ' + attempts + ' attempts');
 }
 
+function hideOverlay(): void {
+  const overlay = document.getElementById("overlay");
+  if (overlay) {
+    overlay.style.display = 'none';
+  }
+}
+
 
 window.addEventListener("DOMContentLoaded", () => {
-  // needs to be invoked with a delay, otherwise the api is not ready yet
-  // invoke("start_api").then(() => {});
+  console.log("loaded");
+
   startApiWithRetry(5, 1000) // tries 5 times, waiting 2000 milliseconds between each attempt
       .then(() => {
+        hideOverlay();
         console.log("API started")
 
         // inject the path value to the input field
@@ -167,7 +175,9 @@ window.addEventListener("DOMContentLoaded", () => {
         suffixEl = document.querySelector("#prompt-suffix")
         statusEl = document.querySelector("#footer");
         importBt = document.querySelector("#import-file-path");
-
+        // if (promptInputEl !== null) {
+        //   promptInputEl.value = "Api Started";
+        // }
         // document.querySelector("#prompt-form")?.addEventListener("submit", (e) => { e.preventDefault(); });
         document.querySelector("#send-prompt")?.addEventListener("click", send_prompt);
         document.querySelector("#select-file")?.addEventListener("click", selectFile);

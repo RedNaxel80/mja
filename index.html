@@ -9,10 +9,15 @@
 </head>
 
 <body>
+<div id="overlay" class="overlay row">
+  <div id="loader" class="loader"></div>
+  <div id="loadingText">Connecting...</div>
+</div>
+
 <div class="container">
   <form id="prompt-form">
     <label for="prompt-input">Write the prompts in separate lines:</label>
-    <textarea id="prompt-input" type="text" placeholder="new prompt..." rows="4"></textarea>
+    <textarea id="prompt-input" placeholder="new prompt..." rows="4"></textarea>
     <!-- <label>Options</label>
     <div class="row">
       <label for="engine">Engine:</label>
@@ -43,13 +48,15 @@
       <label for="chaos">Chaos</label>
       <input type="range" min="1" max="100" value="50" class="slider" id="chaos">
     </div> -->
-    <label>Add suffix:</label>
-    <input id="prompt-suffix" type="text" placeholder="-suffix" />
+
+
+<!--    <label>Add suffix:</label>-->
+<!--    <input id="prompt-suffix" type="text" placeholder="-suffix" />-->
     <button id="send-prompt" type="button">Send</button>
   </form>
 
   <div class="spacer"></div>
-  <label>or select a text file with prepared prompts:</label>
+  <label for="file-path-input">or select a text file with prepared prompts:</label>
   <input id="file-path-input" placeholder="Selected file path..." type="text" readonly style="display: block"/>
   <div class="row">
     <button id="select-file">Browse</button>
@@ -57,7 +64,7 @@
   </div>
 
   <div class="spacer"></div>
-  <label>Your files will be downloaded to this location:</label>
+  <label for="dir-path-input">Your files will be downloaded to this location:</label>
   <input id="dir-path-input" type="text" value="/" readonly />
   <div class="row">
     <button id="open-dir" type="button">Open this folder</button>
@@ -69,5 +76,8 @@
     <div class="counters">Jobs queued: 0, running: 0, done: 0</div>
   </div>
 </div>
+
+
+
 </body>
 </html>
