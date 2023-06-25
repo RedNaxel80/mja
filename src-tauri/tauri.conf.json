@@ -39,6 +39,7 @@
     },
     "windows": [
       {
+        "label": "local",
         "fullscreen": false,
         "resizable": true,
         "title": "MJ Auto",

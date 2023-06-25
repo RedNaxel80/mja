@@ -1,3 +1,4 @@
+import { resolve } from 'path'
 import { defineConfig } from "vite";
 
 // https://vitejs.dev/config/
@@ -20,5 +21,11 @@ export default defineConfig(async () => ({
     minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
     // produce sourcemaps for debug builds
     sourcemap: !!process.env.TAURI_DEBUG,
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'src/index.html'),
+        nested: resolve(__dirname, 'src/settings.html'),
+      },
+    },
   },
 }));
