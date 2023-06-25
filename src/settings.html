@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Tabbed Website</title>
+    <style>
+        input[type=radio] {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+        }
+
+        .tab-container {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .tab-header-container {
+            display: flex;
+            flex-direction: row;
+        }
+
+        label {
+            padding: 5px;
+            border: 1px solid #ccc;
+            margin-right: 5px;
+            cursor: pointer;
+        }
+
+        #tab1:checked ~ .tab-content-container #content1,
+        #tab2:checked ~ .tab-content-container #content2,
+        #tab3:checked ~ .tab-content-container #content3 {
+            display: block;
+        }
+
+        .tab-content {
+            display: none;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="tab-container">
+    <input id="tab1" type="radio" name="tabs" checked>
+    <input id="tab2" type="radio" name="tabs">
+    <input id="tab3" type="radio" name="tabs">
+
+    <div class="tab-header-container">
+        <label for="tab1">Tab 1</label>
+        <label for="tab2">Tab 2</label>
+        <label for="tab3">Tab 3</label>
+    </div>
+
+    <div class="tab-content-container">
+        <div id="content1" class="tab-content">
+            <h2>Title 1</h2>
+            <form>
+                <input type="text" placeholder="Input for Tab 1">
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+
+        <div id="content2" class="tab-content">
+            <h2>Title 2</h2>
+            <form>
+                <input type="text" placeholder="Input for Tab 2">
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+
+        <div id="content3" class="tab-content">
+            <h2>Title 3</h2>
+            <form>
+                <input type="text" placeholder="Input for Tab 3">
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

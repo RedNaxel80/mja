@@ -43,7 +43,13 @@
         "resizable": true,
         "title": "MJ Auto",
         "width": 600,
-        "height": 600
+        "height": 600,
+        "url": "src/index.html"
+      },
+      {
+        "label": "external",
+        "title": "Settings",
+        "url": "src/settings.html"
       }
     ]
   }
