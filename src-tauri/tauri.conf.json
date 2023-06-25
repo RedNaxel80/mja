@@ -39,18 +39,22 @@
     },
     "windows": [
       {
-        "label": "local",
+        "label": "main",
         "fullscreen": false,
         "resizable": true,
         "title": "MJ Auto",
         "width": 600,
         "height": 600,
-        "url": "src/index.html"
+        "url": "src/index.html",
+        "visible": true
       },
       {
-        "label": "external",
+        "label": "settings",
         "title": "Settings",
-        "url": "src/settings.html"
+        "url": "src/settings.html",
+        "width": 400,
+        "height": 200,
+        "visible": false
       }
     ]
   }

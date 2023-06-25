@@ -7,6 +7,7 @@ use std::process::Command as StdCommand;
 use std::thread;
 use tauri::api::process::Command;
 use tauri::api::process::{CommandChild, CommandEvent};
+use tauri::Manager;
 use lazy_static::lazy_static;
 use once_cell::sync::{Lazy, OnceCell};
 use reqwest;
@@ -50,9 +51,6 @@ fn main() {
         *CHILD.lock().unwrap() = Some(child);
     });
 
-    // Wait for the server to start
-    // thread::sleep(std::time::Duration::from_secs(5));
-
     // waiting for server to actually start instead of the arbitrary seconds
     let client = reqwest::blocking::Client::new();
     let port_arg = port.to_string();
@@ -64,8 +62,19 @@ fn main() {
         }
     }
 
-    // buils the ui
+    // builds the ui
     tauri::Builder::default()
+        // .setup(|app| {
+        //     let splashscreen_window = app.get_window("settings").unwrap();
+        //     let main_window = app.get_window("main").unwrap();
+        //     tauri::async_runtime::spawn(async move {
+        //         std::thread::sleep(std::time::Duration::from_secs(5));
+        //
+        //         splashscreen_window.close().unwrap();
+        //         main_window.show().unwrap();
+        //     });
+        //     Ok(())
+        // })
         .invoke_handler(tauri::generate_handler![
             start_api,
             send_prompt,
