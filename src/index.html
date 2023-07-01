@@ -18,40 +18,10 @@
   <form id="prompt-form">
     <label for="prompt-input">Write the prompts in separate lines:</label>
     <textarea id="prompt-input" placeholder="new prompt..." rows="4"></textarea>
-    <!-- <label>Options</label>
-    <div class="row">
-      <label for="engine">Engine:</label>
-      <select id="engine">
-        <option value="MJ51" default>Mj 5.1</option>
-        <option value="MJ50">Mj 5</option>
-        <option value="MJ40">Mj 4</option>
-      </select>
-      <label for="resolution">Resolution:</label>
-      <select id="resolution">
-        <option value="1024" default>standard</option>
-        <option value="2048" disabled>upscaled (Mj 4)</option>
-      </select>
-      <label for="download">Download:</label>
-      <select id="download">
-        <option value="original" default>Original</option>
-        <option value="upscaled" disabled>Upscaled (Mj 4)</option>
-        <option value="both" disabled>Both</option>
-      </select>
-    </div>
-    <div class="row">
-      <label for="ratio">Ratio:</label>
-      <select id="ratio">
-        <option value="11" default>1:1 (square)</option>
-      </select>
-      <label for="styling">Styling</label>
-      <input type="range" min="1" max="1000" value="500" class="slider" id="style">
-      <label for="chaos">Chaos</label>
-      <input type="range" min="1" max="100" value="50" class="slider" id="chaos">
-    </div> -->
-
-
-<!--    <label>Add suffix:</label>-->
-<!--    <input id="prompt-suffix" type="text" placeholder="-suffix" />-->
+    <span style="display:none;">
+    <label for="prompt-suffix">Add suffix:</label>
+    <input id="prompt-suffix" type="text" placeholder="-suffix" />
+    </span>
     <button id="send-prompt" type="button">Send</button>
   </form>
 
@@ -75,6 +45,7 @@
     <div class="status">Bot: starting...</div>
     <div class="counters">Jobs queued: 0, running: 0, done: 0</div>
   </div>
+  <a href="settings.html">Settings</a>
 </div>
 
 
