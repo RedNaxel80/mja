@@ -8,6 +8,22 @@ let statusEl: HTMLElement | null;
 let suffixEl: HTMLInputElement | null;
 let importBt: HTMLButtonElement | null;
 
+// menu items
+let menuWelcome: HTMLLIElement | null;
+let menuSendPrompts: HTMLLIElement | null;
+let menuSendFile: HTMLLIElement | null;
+let menuInstructions: HTMLLIElement | null;
+let menuSettings: HTMLLIElement | null;
+let menuItems: Array<HTMLLIElement | null>;
+
+// page items
+let pageWelcome: HTMLDivElement | null;
+let pageSendPrompts: HTMLDivElement | null;
+let pageSendFile: HTMLDivElement | null;
+let pageInstructions: HTMLDivElement | null;
+let pageSettings: HTMLDivElement | null;
+let pageItems: Array<HTMLDivElement | null>;
+
 async function send_prompt() {
   if (promptInputEl) {
     if (promptInputEl.value == "") // exit if input field is empty
@@ -42,22 +58,28 @@ async function send_prompt_file_path() {
 }
 
 async function selectFile() {
-  const result = await dialog.open({
-    title: "Select a text prompt file",
-    defaultPath: '~/Desktop/',
-    multiple: false,
-    directory: false,
-    filters: [
-      { name: 'Text Files', extensions: ['txt'] }
-    ],
-  });
-
-  if (result && result.length > 0) {
-    if (filePathEl) {
-      filePathEl.value = result as any; // this suppresses type checking errors as vs code sees a non-existing mismatch here
+    console.log("start select file");
+    try {
+        const result = await dialog.open({
+            title: "Select a text prompt file",
+            defaultPath: '~/Desktop/',
+            multiple: false,
+            directory: false,
+            filters: [
+                { name: 'Text Files', extensions: ['txt'] }
+            ],
+        });
+        console.log(result);
+        if (result && result.length > 0) {
+            if (filePathEl) {
+                filePathEl.value = result as any; // this suppresses type checking errors as vs code sees a non-existing mismatch here
+            }
+            if (importBt) { importBt.disabled = false;}
+        }
+    } catch (err) {
+        console.error("An error occurred: ", err);
     }
-    if (importBt) { importBt.disabled = false;}
-  }
+
 }
 
 async function selectFolder() {
@@ -127,7 +149,7 @@ async function updateStatus() {
   }
 
   if (statusEl) {
-    statusEl.innerHTML = `<div class="status">Bot: ${lastStatus}</div><div class="counters">Jobs queued: ${lastCounter1}, running: ${lastCounter2}, done: ${lastCounter3}</div>`;
+    statusEl.innerHTML = `<div class="status">Status: ${lastStatus}</div><div class="counters">Queued: ${lastCounter1}, Running: ${lastCounter2}, Done: ${lastCounter3}</div>`;
   }
 }
 
@@ -148,13 +170,39 @@ async function startApiWithRetry(attempts: number, delayTime: number) {
   throw new Error('API failed to start after ' + attempts + ' attempts');
 }
 
-function hideOverlay(): void {
+function hideOverlay() {
   const overlay = document.getElementById("overlay");
-  if (overlay) {
+  if (overlay)
     overlay.style.display = 'none';
-  }
 }
 
+function pageHideAll() {
+  pageItems.forEach((pageItem) => {
+    if (pageItem !== null) {
+      pageItem.style.display = 'none';
+    }
+  });
+}
+
+function menuDeselectAll() {
+  menuItems.forEach((menuItem) => {
+    if (menuItem !== null) {
+      menuItem.classList.remove('selected');
+    }
+  });
+}
+
+function switchPage(event: Event, element: HTMLElement | null) {
+  let menuItem = event.target as HTMLLIElement;
+  if (menuItem) {
+    menuDeselectAll();
+    menuItem.classList.add('selected');
+  }
+
+  pageHideAll();
+  if (element)
+    element.style.display = 'block';
+}
 
 window.addEventListener("DOMContentLoaded", () => {
   console.log("loaded");
@@ -175,16 +223,37 @@ window.addEventListener("DOMContentLoaded", () => {
         suffixEl = document.querySelector("#prompt-suffix")
         statusEl = document.querySelector("#footer");
         importBt = document.querySelector("#import-file-path");
-        // if (promptInputEl !== null) {
-        //   promptInputEl.value = "Api Started";
-        // }
-        // document.querySelector("#prompt-form")?.addEventListener("submit", (e) => { e.preventDefault(); });
+
+        // left menu items
+        menuWelcome = document.querySelector("#menu-welcome");
+        menuSendPrompts = document.querySelector("#menu-send-prompts");
+        menuSendFile = document.querySelector("#menu-send-file");
+        menuSettings = document.querySelector("#menu-settings");
+        menuInstructions = document.querySelector("#menu-instructions");
+        menuItems = [menuWelcome, menuSendPrompts, menuSendFile, menuInstructions, menuSettings];
+
+        // page items
+        pageWelcome = document.querySelector("#page-welcome");
+        pageSendPrompts = document.querySelector("#page-send-prompts");
+        pageSendFile = document.querySelector("#page-send-file");
+        pageSettings = document.querySelector("#page-settings");
+        pageInstructions = document.querySelector("#page-instructions");
+        pageItems = [pageWelcome, pageSendPrompts, pageSendFile, pageInstructions, pageSettings];
+
+        // document.querySelector("#menu-welcome")?.addEventListener("click", menuWelcomeF);
+        menuWelcome?.addEventListener("click", (event) => switchPage(event, pageWelcome));
+        menuSendPrompts?.addEventListener("click", (event) => switchPage(event, pageSendPrompts));
+        menuSendFile?.addEventListener("click", (event) => switchPage(event, pageSendFile));
+        menuSettings?.addEventListener("click", (event) => switchPage(event, pageSettings));
+        menuInstructions?.addEventListener("click", (event) => switchPage(event, pageInstructions));
+
+        // main functions
         document.querySelector("#send-prompt")?.addEventListener("click", send_prompt);
         document.querySelector("#select-file")?.addEventListener("click", selectFile);
         importBt?.addEventListener("click", send_prompt_file_path);
         document.querySelector("#submit-dir-path")?.addEventListener("click", selectFolder);
         document.querySelector("#open-dir")?.addEventListener("click", open_dir);
-        document.querySelector('#openFileBtn')?.addEventListener('click', () => {document.getElementById('fileInput')?.click();});
+        // document.querySelector('#openFileBtn')?.addEventListener('click', () => {document.getElementById('fileInput')?.click();});
 
         // setTimeout(() => setInterval(updateStatus, 1000), 2000);
         setInterval(updateStatus, 1000);

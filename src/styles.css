@@ -1,25 +1,61 @@
 :root {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 14px;
+  font-size: 12px;
   line-height: 1.5em;
   font-weight: 400;
 
   color: #0f0f0f;
-  background-color: #eee;
+  background-color: #cecece;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+  min-width: 800px;
+  min-height: 600px;
+  user-select: none;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE/Edge */
+
+}
+
+body{
+  margin: 0;
+  padding: 0;
+}
+
+
+#page-welcome,
+#page-send-prompts,
+#page-send-file,
+#page-instructions,
+#page-settings {
+  display: none;
+}
+
+#page-send-prompts {
+  display: block;
 }
 
 .container {
   margin: 0;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   text-align: left;
+}
+
+.menu {
+  width: 200px;
+  background-color: #5c5c5c;
+  height: 96vh;
+  flex-shrink: 0;
+}
+
+.main {
+  margin: 1em;
+  flex:1;
 }
 
 .logo {
@@ -44,12 +80,42 @@ a {
   text-decoration: inherit;
 }
 
+ul {
+  color: #b2b2b2;
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  padding: 0.75em;
+  padding-left: 2em;
+  transition: background-color 0.6s ease-in;
+}
+
+li:hover {
+  background-color: #3e3e3e;
+  cursor: pointer;
+  transition: background-color 0.3s ease-out;
+}
+
+li.selected {
+  background-color: #3e3e3e;
+}
+
+li.selected:hover{
+  cursor: default;
+}
+
 a:hover {
   color: #535bf2;
 }
 
 h1 {
   text-align: center;
+}
+
+h2 {
+  font-weight: normal;
 }
 
 input,
@@ -90,8 +156,15 @@ button, input, textarea {
 input,
 textarea {
   padding: 0.5em;
+  /*width: 640px;*/
   width: 100%;
+  margin: 0;
   box-sizing: border-box;
+}
+
+input.short,
+textarea.short {
+  width: 200px;
 }
 
 textarea {
@@ -114,17 +187,20 @@ button[disabled]:hover {
   border-color: transparent
 }
 
+.suffix {}
+
 #footer{
   position: fixed;
   bottom: 0;
   left: 0;
   padding: 0.4em 0.5em;
-  background-color: #ddd;
+  background-color: #343434;
+  color: #ffffff;
   width: 100%;
 }
 
 .status{ flex: 30; }
-.counters {flex: 40;}
+.counters {text-align: right; margin-right: 1em;}
 
 .spacer{margin-top: 3em;}
 
@@ -165,62 +241,62 @@ button[disabled]:hover {
 
 
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: #f6f6f6;
-    background-color: #2f2f2f;
-  }
+/*@media (prefers-color-scheme: dark) {*/
+/*  :root {*/
+/*    color: #f6f6f6;*/
+/*    background-color: #2f2f2f;*/
+/*  }*/
 
-  a:hover {
-    color: #24c8db;
-  }
+/*  a:hover {*/
+/*    color: #24c8db;*/
+/*  }*/
 
-  input,
-  button,
-  textarea {
-    color: #f6f6f6;
-    background-color: #0f0f0f98;
-  }
-  button:active {
-    background-color: #0f0f0f69;
-  }
+/*  input,*/
+/*  button,*/
+/*  textarea {*/
+/*    color: #f6f6f6;*/
+/*    background-color: #0f0f0f98;*/
+/*  }*/
+/*  button:active {*/
+/*    background-color: #0f0f0f69;*/
+/*  }*/
 
-  #footer{
-    color: #f6f6f6;
-    background-color: #101010;
-  }
+/*  #footer{*/
+/*    color: #f6f6f6;*/
+/*    background-color: #101010;*/
+/*  }*/
 
-  input::placeholder, textarea::placeholder {
-    color: #666;
-  }
+/*  input::placeholder, textarea::placeholder {*/
+/*    color: #666;*/
+/*  }*/
 
-  button[disabled],
-  input[disabled],
-  input[readonly] {
-    background: #242424;
-    color: #777;
-  }
+/*  button[disabled],*/
+/*  input[disabled],*/
+/*  input[readonly] {*/
+/*    background: #242424;*/
+/*    color: #777;*/
+/*  }*/
 
-  /* This will change the color of the scrollbar track (background) */
-  textarea::-webkit-scrollbar-track {
-    background: #202020;
-    color: red;
-  }
+/*  !* This will change the color of the scrollbar track (background) *!*/
+/*  textarea::-webkit-scrollbar-track {*/
+/*    background: #202020;*/
+/*    color: red;*/
+/*  }*/
 
-  /* This will change the color of the scrollbar thumb (the part you drag) */
-  textarea::-webkit-scrollbar-thumb {
-    background: #888;
+/*  !* This will change the color of the scrollbar thumb (the part you drag) *!*/
+/*  textarea::-webkit-scrollbar-thumb {*/
+/*    background: #888;*/
 
-  }
+/*  }*/
 
-  /* Change the color of the scrollbar thumb when it's hovered */
-  textarea::-webkit-scrollbar-thumb:hover {
-    background: #555;
+/*  !* Change the color of the scrollbar thumb when it's hovered *!*/
+/*  textarea::-webkit-scrollbar-thumb:hover {*/
+/*    background: #555;*/
 
-  }
+/*  }*/
 
 
-}
+/*}*/
 
 
 

@@ -41,21 +41,19 @@
       {
         "label": "main",
         "fullscreen": false,
-        "resizable": true,
+        "resizable": false,
         "title": "MJ Auto",
-        "width": 600,
-        "height": 600,
+        "width": 820,
+        "height": 635,
         "url": "src/index.html",
-        "visible": true
-      },
-      {
-        "label": "settings",
-        "title": "Settings",
-        "url": "src/settings.html",
-        "width": 400,
-        "height": 200,
-        "visible": false
+        "visible": true,
+        "hiddenTitle": false
       }
-    ]
+    ],
+    "systemTray": {
+        "iconPath": "icons/128x128.png",
+        "menuOnLeftClick": true
+      }
+
   }
 }

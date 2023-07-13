@@ -2,50 +2,99 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <link rel="stylesheet" href="/src/styles.css" />
+  <link rel="stylesheet" href="styles.css" /> <!-- change to /src/styles.css-->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MJ Auto</title>
   <script type="module" src="/src/main.ts" defer></script>
 </head>
 
 <body>
-<div id="overlay" class="overlay row">
-  <div id="loader" class="loader"></div>
-  <div id="loadingText">Connecting...</div>
-</div>
-
+<!--<div id="overlay" class="overlay row">-->
+<!--  <div id="loader" class="loader"></div>-->
+<!--  <div id="loadingText">Connecting...</div>-->
+<!--</div>-->
 <div class="container">
-  <form id="prompt-form">
-    <label for="prompt-input">Write the prompts in separate lines:</label>
-    <textarea id="prompt-input" placeholder="new prompt..." rows="4"></textarea>
-    <span style="display:none;">
-    <label for="prompt-suffix">Add suffix:</label>
-    <input id="prompt-suffix" type="text" placeholder="-suffix" />
-    </span>
-    <button id="send-prompt" type="button">Send</button>
-  </form>
-
-  <div class="spacer"></div>
-  <label for="file-path-input">or select a text file with prepared prompts:</label>
-  <input id="file-path-input" placeholder="Selected file path..." type="text" readonly style="display: block"/>
-  <div class="row">
-    <button id="select-file">Browse</button>
-    <button id="import-file-path" type="button" disabled>Import and process</button>
+  <div class="menu">
+    <ul>
+      <li id="menu-welcome">Welcome</li>
+      <li id="menu-send-prompts" class="selected">Send prompts</li>
+      <li id="menu-send-file">Send text file</li>
+      <li id="menu-instructions">Instructions</li>
+      <li id="menu-settings">Settings</li>
+    </ul>
   </div>
 
-  <div class="spacer"></div>
-  <label for="dir-path-input">Your files will be downloaded to this location:</label>
-  <input id="dir-path-input" type="text" value="/" readonly />
-  <div class="row">
-    <button id="open-dir" type="button">Open this folder</button>
-    <button id="submit-dir-path" type="button">Change location</button>
-  </div>
+  <div class="main">
 
+    <!-- WELCOME PAGE -->
+    <div id="page-welcome">
+      <h2>Welcome</h2>
+    </div>
+
+    <!-- SEND PROMPTS PAGE -->
+    <div id="page-send-prompts">
+      <h2>Send prompts</h2>
+<!--      <form id="prompt-form">-->
+<!--        <label for="prompt-input">Write the prompts in separate lines:</label>-->
+<!--        <textarea id="prompt-input" placeholder="new prompt..." rows="6"></textarea>-->
+<!--        <label for="prompt-suffix">Add suffix:</label>-->
+<!--        <input id="prompt-suffix" class="suffix" type="text" disabled/>-->
+<!--        <button id="send-prompt" type="button">Send</button>-->
+<!--      </form>-->
+
+<!--      <div class="spacer"></div>-->
+<!--      <label for="dir-path-input">Your files will be downloaded to this location:</label>-->
+<!--      <input id="dir-path-input" type="text" value="/" readonly />-->
+<!--&lt;!&ndash;      <div class="row">&ndash;&gt;-->
+<!--&lt;!&ndash;        <button id="open-dir" type="button">Open this folder</button>&ndash;&gt;-->
+<!--&lt;!&ndash;        <button id="submit-dir-path" type="button">Change location</button>&ndash;&gt;-->
+<!--&lt;!&ndash;      </div>&ndash;&gt;-->
+
+<!--      <div class="spacer"></div>-->
+<!--      <h2>Options</h2>-->
+<!--      <div class="row">-->
+<!--      <label>Version:&nbsp;</label>-->
+<!--        <input type="text" class="input-option short" />-->
+<!--      </div>-->
+    </div>
+
+<!--    SEND FILE PAGE -->
+    <div id="page-send-file">
+      <h2>Send text file</h2>
+      <form id="something">
+        <label for="file-path-input">Choose file:</label>
+        <input id="file-path-input" placeholder="Selected file path..." type="text" readonly style="display: block"/>
+        <button id="select-file">Browse</button>
+        <div class="spacer"></div>
+        <label for="prompt-suffix2">Add suffix:</label>
+        <input id="prompt-suffix2" class="suffix" type="text" disabled />
+        <button id="import-file-path" type="button" disabled>Send</button>
+
+
+              <label for="dir-path-input">Your files will be downloaded to this location:</label>
+              <input id="dir-path-input" type="text" value="/" readonly />
+                <button id="open-dir" type="button">Open this folder</button>
+                <button id="submit-dir-path" type="button">Change location</button>
+        <div>
+<!--          <a id="open-dir" type="button">Download folder</a> | <a id="submit-dir-path" type="button">Change location</a>-->
+        </div>
+      </form>
+    </div>
+
+    <!-- INSTRUCTIONS PAGE -->
+    <div id="page-instructions">
+      <h2>Instructions</h2>
+    </div>
+
+    <!-- SETTINGS PAGE -->
+    <div id="page-settings">
+      <h2>Settings</h2>
+    </div>
+  </div>
   <div id="footer" class="row">
-    <div class="status">Bot: starting...</div>
-    <div class="counters">Jobs queued: 0, running: 0, done: 0</div>
+    <div class="status">Status: starting...</div>
+    <div class="counters">Queued: 0, Running: 0, Done: 0</div>
   </div>
-  <a href="settings.html">Settings</a>
 </div>
 
 

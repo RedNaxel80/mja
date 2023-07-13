@@ -7,7 +7,7 @@ use std::process::Command as StdCommand;
 use std::thread;
 use tauri::api::process::Command;
 use tauri::api::process::{CommandChild, CommandEvent};
-use tauri::Manager;
+// use tauri::Manager;
 use lazy_static::lazy_static;
 use once_cell::sync::{Lazy, OnceCell};
 use reqwest;
@@ -136,6 +136,7 @@ async fn send_prompt(prompt: String) -> Result<(), String> {
 #[tauri::command]
 async fn send_prompt_file_path(path: String) -> Result<(), String> {
     let filepath = Path::new(&path);
+    println!("{:?}", filepath);
     let port = OPEN_PORT.get().unwrap().to_string();
     let url = format!("http://127.0.0.1:{}/api/send-filepath", port);
     let res = CLIENT
