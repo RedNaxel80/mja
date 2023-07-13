@@ -34,28 +34,28 @@
     <!-- SEND PROMPTS PAGE -->
     <div id="page-send-prompts">
       <h2>Send prompts</h2>
-<!--      <form id="prompt-form">-->
-<!--        <label for="prompt-input">Write the prompts in separate lines:</label>-->
-<!--        <textarea id="prompt-input" placeholder="new prompt..." rows="6"></textarea>-->
-<!--        <label for="prompt-suffix">Add suffix:</label>-->
-<!--        <input id="prompt-suffix" class="suffix" type="text" disabled/>-->
-<!--        <button id="send-prompt" type="button">Send</button>-->
-<!--      </form>-->
+      <form id="prompt-form">
+        <label for="prompt-input">Write the prompts in separate lines:</label>
+        <textarea id="prompt-input" placeholder="new prompt..." rows="6"></textarea>
+        <label for="prompt-suffix">Add suffix:</label>
+        <input id="prompt-suffix" class="suffix" type="text" disabled/>
+        <button id="send-prompt" type="button">Send</button>
+      </form>
 
-<!--      <div class="spacer"></div>-->
-<!--      <label for="dir-path-input">Your files will be downloaded to this location:</label>-->
-<!--      <input id="dir-path-input" type="text" value="/" readonly />-->
-<!--&lt;!&ndash;      <div class="row">&ndash;&gt;-->
-<!--&lt;!&ndash;        <button id="open-dir" type="button">Open this folder</button>&ndash;&gt;-->
-<!--&lt;!&ndash;        <button id="submit-dir-path" type="button">Change location</button>&ndash;&gt;-->
-<!--&lt;!&ndash;      </div>&ndash;&gt;-->
+      <div class="spacer"></div>
+      <label for="dir-path-input">Your files will be downloaded to this location:</label>
+      <input id="dir-path-input" type="text" value="/" readonly />
+      <div class="row">
+        <button id="open-dir" type="button">Open this folder</button>
+        <button id="submit-dir-path" type="button">Change location</button>
+      </div>
 
-<!--      <div class="spacer"></div>-->
-<!--      <h2>Options</h2>-->
-<!--      <div class="row">-->
-<!--      <label>Version:&nbsp;</label>-->
-<!--        <input type="text" class="input-option short" />-->
-<!--      </div>-->
+      <div class="spacer"></div>
+      <h2>Options</h2>
+      <div class="row">
+      <label>Version:&nbsp;</label>
+        <input type="text" class="input-option short" />
+      </div>
     </div>
 
 <!--    SEND FILE PAGE -->
@@ -64,10 +64,10 @@
       <form id="something">
         <label for="file-path-input">Choose file:</label>
         <input id="file-path-input" placeholder="Selected file path..." type="text" readonly style="display: block"/>
-        <button id="select-file">Browse</button>
+        <button id="select-file" type="button">Browse</button>
         <div class="spacer"></div>
-        <label for="prompt-suffix2">Add suffix:</label>
-        <input id="prompt-suffix2" class="suffix" type="text" disabled />
+        <label for="prompt-suffix">Add suffix:</label>
+        <input id="prompt-suffix" class="suffix" type="text" disabled />
         <button id="import-file-path" type="button" disabled>Send</button>
 
 
