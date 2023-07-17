@@ -166,6 +166,11 @@ textarea {
   box-sizing: border-box;
 }
 
+#repeat-number{
+  width: 34px;
+  text-align: right;
+}
+
 input.short,
 textarea.short {
   width: 200px;

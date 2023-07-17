@@ -45,19 +45,24 @@ async function send_prompt() {
     if (promptInputEl.value == "") // exit if input field is empty
       return;
 
-    let repeat = 1;
-    if (repeatEl)
-        repeat = parseInt(repeatEl.value, 10);
+    let repetitions = 1;
+    if (repeatEl && repeatEl.value != "")
+        repetitions = parseInt(repeatEl.value, 10);
+
+    let repeatedLines: string[] = [];
 
     let lines = promptInputEl.value.split('\n');
     lines = lines.filter(line => line.trim() !== ''); // filter empty lines
+
     for (let i = 0; i < lines.length; i++) {
-      // —s
-      lines[i] = lines[i] + " " + suffixEl?.value;
+      for(let j = 0; j < repetitions; j++){
+          // —s
+          let line = lines[i] + " " + suffixEl?.value;
+          repeatedLines.push(line);
+      }
     }
-    let full_text = lines.join('\n');
 
-
+    let full_text = repeatedLines.join('\n');
 
     await invoke("send_prompt", {
       prompt: full_text,
@@ -299,6 +304,22 @@ function onPromptChange() {
 }
 
 
+function onRepeatChange(){
+    if (repeatEl == null)
+        return;
+
+    repeatEl.value = repeatEl.value.replace(/[^0-9]/g, '');
+}
+
+function preventEmptyRepeat()
+{
+    if (repeatEl == null)
+        return;
+
+    if (repeatEl.value == "")
+        repeatEl.value = "1";
+}
+
 window.addEventListener("DOMContentLoaded", () => {
   console.log("loaded");
 
@@ -350,6 +371,8 @@ window.addEventListener("DOMContentLoaded", () => {
         // main functions
         sendBt?.addEventListener("click", send_prompt);
         promptInputEl?.addEventListener("input", onPromptChange);
+        repeatEl?.addEventListener("input", onRepeatChange);
+        repeatEl?.addEventListener("change", preventEmptyRepeat);
         document.querySelector("#select-file")?.addEventListener("click", selectFile);
         importBt?.addEventListener("click", send_prompt_file_path);
         document.querySelector("#submit-dir-path")?.addEventListener("click", selectFolder);
