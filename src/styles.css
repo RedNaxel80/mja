@@ -26,7 +26,6 @@ body{
   padding: 0;
 }
 
-
 #page-welcome,
 #page-send-prompts,
 #page-send-file,
@@ -35,7 +34,7 @@ body{
   display: none;
 }
 
-#page-send-prompts {
+#page-welcome {
   display: block;
 }
 
@@ -78,6 +77,11 @@ a {
   font-weight: 500;
   color: #646cff;
   text-decoration: inherit;
+  cursor: pointer;
+}
+
+.download-link {
+  margin-top: 4px;
 }
 
 ul {
@@ -153,7 +157,7 @@ button, input, textarea {
   outline: none;
 }
 
-input,
+input[type="text"],
 textarea {
   padding: 0.5em;
   /*width: 640px;*/
@@ -183,8 +187,21 @@ input[disabled], input[readonly] {
   box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
 }
 
-button[disabled]:hover {
+button[disabled]:hover,
+button.submit-prompt[disabled]:hover{
   border-color: transparent
+}
+
+button.submit-prompt {
+  padding: 6px;
+  width: 130px;
+  /*border-width: 2px;*/
+  /*border-color: #61b782;*/
+  margin: 5px 0 0 0;
+}
+
+button.submit-prompt:hover{
+  border-color: #61b782;
 }
 
 .suffix {}
@@ -238,6 +255,45 @@ button[disabled]:hover {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+
+
+.options {
+  display: flex;
+}
+
+.column {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+}
+
+.column .row {
+  text-align: right;
+
+}
+
+.half-column {
+  flex: 1;
+  padding: 10px;
+  /*border: 1px solid #000;  !* optional: for visibility of the divs *!*/
+}
+
+.column {
+  flex-direction: column;
+  text-align: left;
+  padding: 10px;
+  /*border: 1px solid #000;  !* optional: for visibility of the divs *!*/
+}
+
+.alignright {
+  text-align: right;
+  align-items: flex-end;
+}
+
+
+
+
 
 
 

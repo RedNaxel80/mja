@@ -4,9 +4,25 @@ import { dialog } from "@tauri-apps/api";
 let promptInputEl: HTMLTextAreaElement | null;
 let filePathEl: HTMLInputElement | null;
 let dirPathEl: HTMLInputElement | null;
+let dirPathEl2: HTMLInputElement | null;
 let statusEl: HTMLElement | null;
 let suffixEl: HTMLInputElement | null;
+let suffixEl2: HTMLInputElement | null;
+let repeatEl: HTMLInputElement | null;
+
+// submit buttons
 let importBt: HTMLButtonElement | null;
+let sendBt: HTMLButtonElement | null;
+
+// options
+let optionVersion: HTMLSelectElement | null;
+let optionStyling: HTMLSelectElement | null;
+let optionChaos: HTMLSelectElement | null;
+let optionRatio: HTMLSelectElement | null;
+// let optionVersion2: HTMLSelectElement | null;
+// let optionStyling2: HTMLSelectElement | null;
+// let optionChaos2: HTMLSelectElement | null;
+// let optionRatio2: HTMLSelectElement | null;
 
 // menu items
 let menuWelcome: HTMLLIElement | null;
@@ -29,6 +45,10 @@ async function send_prompt() {
     if (promptInputEl.value == "") // exit if input field is empty
       return;
 
+    let repeat = 1;
+    if (repeatEl)
+        repeat = parseInt(repeatEl.value, 10);
+
     let lines = promptInputEl.value.split('\n');
     lines = lines.filter(line => line.trim() !== ''); // filter empty lines
     for (let i = 0; i < lines.length; i++) {
@@ -36,6 +56,8 @@ async function send_prompt() {
       lines[i] = lines[i] + " " + suffixEl?.value;
     }
     let full_text = lines.join('\n');
+
+
 
     await invoke("send_prompt", {
       prompt: full_text,
@@ -56,6 +78,24 @@ async function send_prompt_file_path() {
     }
   }
 }
+
+async function send_prompt_file_path_with_suffix() {
+    let suffixText = "";
+    if (suffixEl)
+        suffixText = suffixEl.value;
+
+    if (filePathEl) {
+        await invoke("send_prompt_file_path", {
+            path: filePathEl.value,
+            suffix: suffixText
+        });
+        if (importBt) {
+            importBt.disabled = true;
+            filePathEl.value = "";
+        }
+    }
+}
+
 
 async function selectFile() {
     console.log("start select file");
@@ -98,6 +138,7 @@ async function selectFolder() {
       await send_dir_path(result);
       await get_dir_path().then((path) => {
         if(path) dirPathEl!.value = path;
+        if(path) dirPathEl2!.value = path;
       });
     }
   }
@@ -204,6 +245,60 @@ function switchPage(event: Event, element: HTMLElement | null) {
     element.style.display = 'block';
 }
 
+function updateSuffix() {
+    let suffixText = "";
+
+    suffixText += optionVersion?.value + optionStyling?.value + optionChaos?.value + optionRatio?.value;
+
+    if (suffixEl && suffixEl2)
+    {
+        suffixEl.value = suffixText;
+        suffixEl2.value = suffixText;
+    }
+}
+
+let replacements: { [key: string]: string } = {
+    "“": "\"",  // Left double quotation mark
+    "”": "\"",  // Right double quotation mark
+    "‘": "'",   // Left single quotation mark
+    "’": "'",   // Right single quotation mark
+    "–": "-",   // En dash
+    "—": "--",  // Em dash
+    "…": "...", // Horizontal ellipsis
+    "©": "(c)", // Copyright symbol
+    "®": "(R)", // Registered trademark symbol
+    "™": "(TM)", // Trademark symbol
+    "€": "EUR", // Euro sign
+    "£": "GBP", // Pound sign
+    "¥": "JPY", // Yen sign
+    "¢": "c",   // Cent sign
+    "§": "Sec", // Section sign
+    "¶": "P",   // Pilcrow sign
+    "°": "deg", // Degree symbol
+    "•": "*",   // Bullet
+};
+
+function onPromptChange() {
+    if (sendBt == null || promptInputEl == null)
+        return;
+
+    if (promptInputEl.value == "")
+        sendBt.disabled = true;
+    else
+    {
+        sendBt.disabled = false;
+        // promptInputEl.value = promptInputEl.value.replace(/—/g, "--");
+        for (let char in replacements) {
+            let regex = new RegExp(char, "g");
+            promptInputEl.value = promptInputEl.value.replace(regex, replacements[char]);
+        }
+        promptInputEl.selectionStart = promptInputEl.selectionEnd = promptInputEl.value.length;
+
+    }
+
+}
+
+
 window.addEventListener("DOMContentLoaded", () => {
   console.log("loaded");
 
@@ -214,17 +309,23 @@ window.addEventListener("DOMContentLoaded", () => {
 
         // inject the path value to the input field
         dirPathEl = document.querySelector("#dir-path-input");
+        dirPathEl2 = document.querySelector("#dir-path-input2");
         get_dir_path().then((path) => {
           if(path) dirPathEl!.value = path;
+          if(path) dirPathEl2!.value = path;
         });
 
+        // main elements
         promptInputEl = document.querySelector("#prompt-input");
         filePathEl = document.querySelector("#file-path-input");
-        suffixEl = document.querySelector("#prompt-suffix")
+        suffixEl = document.querySelector("#prompt-suffix");
+        suffixEl2 = document.querySelector("#prompt-suffix2");
         statusEl = document.querySelector("#footer");
         importBt = document.querySelector("#import-file-path");
+        sendBt = document.querySelector("#send-prompt");
+        repeatEl = document.querySelector("#repeat-number");
 
-        // left menu items
+        // side menu items
         menuWelcome = document.querySelector("#menu-welcome");
         menuSendPrompts = document.querySelector("#menu-send-prompts");
         menuSendFile = document.querySelector("#menu-send-file");
@@ -240,7 +341,6 @@ window.addEventListener("DOMContentLoaded", () => {
         pageInstructions = document.querySelector("#page-instructions");
         pageItems = [pageWelcome, pageSendPrompts, pageSendFile, pageInstructions, pageSettings];
 
-        // document.querySelector("#menu-welcome")?.addEventListener("click", menuWelcomeF);
         menuWelcome?.addEventListener("click", (event) => switchPage(event, pageWelcome));
         menuSendPrompts?.addEventListener("click", (event) => switchPage(event, pageSendPrompts));
         menuSendFile?.addEventListener("click", (event) => switchPage(event, pageSendFile));
@@ -248,12 +348,36 @@ window.addEventListener("DOMContentLoaded", () => {
         menuInstructions?.addEventListener("click", (event) => switchPage(event, pageInstructions));
 
         // main functions
-        document.querySelector("#send-prompt")?.addEventListener("click", send_prompt);
+        sendBt?.addEventListener("click", send_prompt);
+        promptInputEl?.addEventListener("input", onPromptChange);
         document.querySelector("#select-file")?.addEventListener("click", selectFile);
         importBt?.addEventListener("click", send_prompt_file_path);
         document.querySelector("#submit-dir-path")?.addEventListener("click", selectFolder);
         document.querySelector("#open-dir")?.addEventListener("click", open_dir);
+        document.querySelector("#submit-dir-path2")?.addEventListener("click", selectFolder);
+        document.querySelector("#open-dir2")?.addEventListener("click", open_dir);
         // document.querySelector('#openFileBtn')?.addEventListener('click', () => {document.getElementById('fileInput')?.click();});
+
+        // options insert to suffix
+        optionVersion = document.querySelector("#mj-version");
+        optionStyling = document.querySelector("#mj-styling");
+        optionChaos = document.querySelector("#mj-chaos");
+        optionRatio = document.querySelector("#mj-ratio");
+        // optionVersion2 = document.querySelector("#mj-version2");
+        // optionStyling2 = document.querySelector("#mj-styling2");
+        // optionChaos2 = document.querySelector("#mj-chaos2");
+        // optionRatio2 = document.querySelector("#mj-ratio2");
+
+        optionVersion?.addEventListener("change", updateSuffix);
+        optionStyling?.addEventListener("change", updateSuffix);
+        optionChaos?.addEventListener("change", updateSuffix);
+        optionRatio?.addEventListener("change", updateSuffix);
+        // optionVersion2?.addEventListener("change", updateSuffix);
+        // optionStyling2?.addEventListener("change", updateSuffix);
+        // optionChaos2?.addEventListener("change", updateSuffix);
+        // optionRatio2?.addEventListener("change", updateSuffix);
+
+        updateSuffix();
 
         // setTimeout(() => setInterval(updateStatus, 1000), 2000);
         setInterval(updateStatus, 1000);
