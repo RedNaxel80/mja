@@ -240,18 +240,14 @@ function switchPage(event: Event, element: HTMLElement | null) {
 
 function updateSuffix() {
     let suffixText = "";
-
-    suffixText += optionVersion?.value + optionStyling?.value + optionChaos?.value + optionRatio?.value;
-
+    suffixText += (optionVersion?.value ?? '') + (optionStyling?.value ?? '') + (optionChaos?.value ?? '') + (optionRatio?.value ?? '');
     if (suffixEl)
         suffixEl.value = suffixText;
 }
 
 function updateSuffix2() {
     let suffixText2 = "";
-
-    suffixText2 += optionVersion2?.value + optionStyling2?.value + optionChaos2?.value + optionRatio2?.value;
-
+    suffixText2 += (optionVersion2?.value ?? '') + (optionStyling2?.value ?? '') + (optionChaos2?.value ?? '') + (optionRatio2?.value ?? '');
     if (suffixEl2)
         suffixEl2.value = suffixText2;
 }
@@ -317,6 +313,15 @@ function preventEmptyRepeat()
 
 window.addEventListener("DOMContentLoaded", () => {
   console.log("loaded");
+
+  // check for the first run (settings completed)
+  // if it's first run (or not completed setup)
+    // disable menu
+    // switch to settings page
+    // on save do alert about restart
+    // fake take time (10s)
+    // quit (restart if possible)
+  // if they are ok, continue to start api
 
   startApiWithRetry(5, 1000) // tries 5 times, waiting 2000 milliseconds between each attempt
       .then(() => {

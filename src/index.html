@@ -197,18 +197,79 @@
 
     </div>
 
-
-
     <!-- INSTRUCTIONS PAGE -->
     <div id="page-instructions">
       <h2>Instructions</h2>
+      <h3>Set up (5-10 minutes)</h3>
+      <ol>
+        <li>Assuming you have discord account an midjourney subscription</li>
+        <li>Developer’s mode in discord</li>
+        <li>Create a server and channel - copy IDs</li>
+        <li>Create bot - copy token</li>
+        <li>Get your account token from the browser - copy token</li>
+        <li>Copy username</li>
+        <li>Set subscription type</li>
+      </ol>
+
+      <h3>Using the app</h3>
+      <ol>
+        <li>Setting download folder</li>
+        <li>Sending single and multiple prompts</li>
+        <li>Sending files with bulk amounts of prompts</li>
+      </ol>
+
     </div>
 
     <!-- SETTINGS PAGE -->
     <div id="page-settings">
       <h2>Settings</h2>
+      <form>
+        <label for="settings-discord-bot-token">Discord bot token</label>
+        <input id="settings-discord-bot-token" type="text" />
+
+        <label for="settings-discord-account-token">Your Discord account token</label>
+        <input id="settings-discord-account-token" type="text" />
+        <table>
+          <tr>
+            <td>
+              <label for="settings-discord-server-id">Your Discord server id</label>
+              <input id="settings-discord-server-id" type="text" />
+            </td>
+            <td>
+              <label for="settings-discord-channel-id">Your Discord channel id</label>
+              <input id="settings-discord-channel-id" type="text" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <label for="settings-discord-username">Your Discord username</label>
+              <input id="settings-discord-username" type="text" class="short" />
+            </td>
+            <td></td>
+          </tr>
+        </table>
+
+        <label for="settings-discord-subscription-type">Midjourney subscription type</label><br />
+        <select id="settings-discord-subscription-type">
+          <option value="3">Basic</option>
+          <option value="3" selected>Standard</option>
+          <option value="10">Pro</option>
+          <option value="10">Mega</option>
+        </select>
+        <br /><br />
+        <a href="">Read instructions on where to get all those values</a>
+
+        <div class="column alignright">
+          <button id="save-settings" type="button" class="submit-prompt">Save</button>
+        </div>
+      </form>
     </div>
+
+
   </div>
+
+
+  <!-- STATUS BAR (ALL PAGES) -->
   <div id="footer" class="row">
     <div class="status">Status: starting...</div>
     <div class="counters">Queued: 0, Running: 0, Done: 0</div>
