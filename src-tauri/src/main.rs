@@ -7,15 +7,12 @@ use std::process::Command as StdCommand;
 use std::thread;
 use tauri::api::process::Command;
 use tauri::api::process::{CommandChild, CommandEvent};
-// use tauri::Manager;
 use lazy_static::lazy_static;
 use once_cell::sync::{Lazy, OnceCell};
 use reqwest;
 use reqwest::Client;
 use serde_json::{json, Value};
 use rand::Rng;
-// use tokio::runtime::Runtime;
-// use std::thread::sleep;
 
 static OPEN_PORT: OnceCell<u16> = OnceCell::new();
 static CLIENT: Lazy<Client> = Lazy::new(|| Client::new());
@@ -64,21 +61,11 @@ fn main() {
 
     // builds the ui
     tauri::Builder::default()
-        // .setup(|app| {
-        //     let splashscreen_window = app.get_window("settings").unwrap();
-        //     let main_window = app.get_window("main").unwrap();
-        //     tauri::async_runtime::spawn(async move {
-        //         std::thread::sleep(std::time::Duration::from_secs(5));
-        //
-        //         splashscreen_window.close().unwrap();
-        //         main_window.show().unwrap();
-        //     });
-        //     Ok(())
-        // })
         .invoke_handler(tauri::generate_handler![
             start_api,
             send_prompt,
             send_prompt_file_path,
+            send_prompt_file_path_with_suffix,
             get_dir_path,
             send_dir_path,
             open_dir,
@@ -136,12 +123,35 @@ async fn send_prompt(prompt: String) -> Result<(), String> {
 #[tauri::command]
 async fn send_prompt_file_path(path: String) -> Result<(), String> {
     let filepath = Path::new(&path);
-    println!("{:?}", filepath);
+    // println!("{:?}", filepath);
     let port = OPEN_PORT.get().unwrap().to_string();
     let url = format!("http://127.0.0.1:{}/api/send-filepath", port);
     let res = CLIENT
         .post(&url)
         .json(&json!({ "filepath": filepath }))
+        .send()
+        .await
+        .map_err(|e| e.to_string())?;
+
+    if res.status().is_success() {
+        let _response_text = res.text().await.map_err(|e| e.to_string())?;
+        // println!("{}", response_text);
+        Ok(())
+    } else {
+        Err("Failed to send the request set-download-dir".into())
+    }
+}
+
+#[tauri::command]
+async fn send_prompt_file_path_with_suffix(path: String, suffix: String) -> Result<(), String> {
+    let filepath = Path::new(&path);
+    // println!("{:?}", filepath);
+    // println!("{:?}", suffix);
+    let port = OPEN_PORT.get().unwrap().to_string();
+    let url = format!("http://127.0.0.1:{}/api/send-filepath", port);
+    let res = CLIENT
+        .post(&url)
+        .json(&json!({ "filepath": filepath, "suffix": suffix }))
         .send()
         .await
         .map_err(|e| e.to_string())?;

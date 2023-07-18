@@ -38,6 +38,8 @@ body{
   display: block;
 }
 
+.suffix-option {display: none;}
+
 .container {
   margin: 0;
   display: flex;

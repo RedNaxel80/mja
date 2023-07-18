@@ -19,10 +19,10 @@ let optionVersion: HTMLSelectElement | null;
 let optionStyling: HTMLSelectElement | null;
 let optionChaos: HTMLSelectElement | null;
 let optionRatio: HTMLSelectElement | null;
-// let optionVersion2: HTMLSelectElement | null;
-// let optionStyling2: HTMLSelectElement | null;
-// let optionChaos2: HTMLSelectElement | null;
-// let optionRatio2: HTMLSelectElement | null;
+let optionVersion2: HTMLSelectElement | null;
+let optionStyling2: HTMLSelectElement | null;
+let optionChaos2: HTMLSelectElement | null;
+let optionRatio2: HTMLSelectElement | null;
 
 // menu items
 let menuWelcome: HTMLLIElement | null;
@@ -73,24 +73,12 @@ async function send_prompt() {
 }
 
 async function send_prompt_file_path() {
-  if (filePathEl) {
-    await invoke("send_prompt_file_path", {
-      path: filePathEl.value,
-    });
-    if (importBt) {
-      importBt.disabled = true;
-      filePathEl.value = "";
-    }
-  }
-}
-
-async function send_prompt_file_path_with_suffix() {
     let suffixText = "";
     if (suffixEl)
         suffixText = suffixEl.value;
 
     if (filePathEl) {
-        await invoke("send_prompt_file_path", {
+        await invoke("send_prompt_file_path_with_suffix", {
             path: filePathEl.value,
             suffix: suffixText
         });
@@ -255,12 +243,19 @@ function updateSuffix() {
 
     suffixText += optionVersion?.value + optionStyling?.value + optionChaos?.value + optionRatio?.value;
 
-    if (suffixEl && suffixEl2)
-    {
+    if (suffixEl)
         suffixEl.value = suffixText;
-        suffixEl2.value = suffixText;
-    }
 }
+
+function updateSuffix2() {
+    let suffixText2 = "";
+
+    suffixText2 += optionVersion2?.value + optionStyling2?.value + optionChaos2?.value + optionRatio2?.value;
+
+    if (suffixEl2)
+        suffixEl2.value = suffixText2;
+}
+
 
 let replacements: { [key: string]: string } = {
     "“": "\"",  // Left double quotation mark
@@ -386,21 +381,22 @@ window.addEventListener("DOMContentLoaded", () => {
         optionStyling = document.querySelector("#mj-styling");
         optionChaos = document.querySelector("#mj-chaos");
         optionRatio = document.querySelector("#mj-ratio");
-        // optionVersion2 = document.querySelector("#mj-version2");
-        // optionStyling2 = document.querySelector("#mj-styling2");
-        // optionChaos2 = document.querySelector("#mj-chaos2");
-        // optionRatio2 = document.querySelector("#mj-ratio2");
+        optionVersion2 = document.querySelector("#mj-version2");
+        optionStyling2 = document.querySelector("#mj-styling2");
+        optionChaos2 = document.querySelector("#mj-chaos2");
+        optionRatio2 = document.querySelector("#mj-ratio2");
 
         optionVersion?.addEventListener("change", updateSuffix);
         optionStyling?.addEventListener("change", updateSuffix);
         optionChaos?.addEventListener("change", updateSuffix);
         optionRatio?.addEventListener("change", updateSuffix);
-        // optionVersion2?.addEventListener("change", updateSuffix);
-        // optionStyling2?.addEventListener("change", updateSuffix);
-        // optionChaos2?.addEventListener("change", updateSuffix);
-        // optionRatio2?.addEventListener("change", updateSuffix);
+        optionVersion2?.addEventListener("change", updateSuffix2);
+        optionStyling2?.addEventListener("change", updateSuffix2);
+        optionChaos2?.addEventListener("change", updateSuffix2);
+        optionRatio2?.addEventListener("change", updateSuffix2);
 
         updateSuffix();
+        updateSuffix2();
 
         // setTimeout(() => setInterval(updateStatus, 1000), 2000);
         setInterval(updateStatus, 1000);

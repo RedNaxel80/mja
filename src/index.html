@@ -18,7 +18,7 @@
     <ul>
       <li id="menu-welcome" class="selected">Welcome</li>
       <li id="menu-send-prompts">Send prompts</li>
-      <li id="menu-send-file">Send text file</li>
+      <li id="menu-send-file">Send text file (bulk mode)</li>
       <li id="menu-instructions">Instructions</li>
       <li id="menu-settings">Settings</li>
     </ul>
@@ -42,8 +42,8 @@
         <input id="repeat-number" type="text" value="1" maxlength="3" /><label for="repeat-number">&nbsp;number of times.</label><br />
 
         <div class="spacer"></div>
-        <label for="prompt-suffix">Suffix (created from options below):</label>
-        <input id="prompt-suffix" class="suffix" type="text" disabled/>
+        <label for="prompt-suffix" class="suffix-option">Suffix (created from options below):</label>
+        <input id="prompt-suffix" class="suffix suffix-option" type="text" disabled/>
 
         <div class="spacer"></div>
 
@@ -72,8 +72,8 @@
                     <select id="mj-styling">
                       <option value=" --s 0">0</option>
                       <option value=" --s 250">250</option>
-                      <option value=" --s 500" selected>500</option>
-                      <option value=" --s 750">750</option>
+                      <option value=" --s 500">500</option>
+                      <option value=" --s 750" selected>750</option>
                       <option value=" --s 1000">1000</option>
                     </select>
                   </td>
@@ -122,20 +122,82 @@
         <label for="file-path-input">Choose file:</label>
         <input id="file-path-input" placeholder="Selected file path..." type="text" readonly style="display: block"/>
         <button id="select-file" type="button">Browse</button>
-        <div class="spacer"></div>
-        <label for="prompt-suffix2">Add suffix:</label>
-        <input id="prompt-suffix2" class="suffix" type="text" disabled />
-        <button id="import-file-path" type="button" disabled>Send</button>
 
-        <label for="dir-path-input2">Your files will be downloaded to this location:</label>
-        <input id="dir-path-input2" type="text" value="/" readonly />
-        <button id="open-dir2" type="button">Open this folder</button>
-        <button id="submit-dir-path2" type="button">Change location</button>
-        <div>
-<!--          <a id="open-dir" type="button">Download folder</a> | <a id="submit-dir-path" type="button">Change location</a>-->
+        <div class="spacer"></div>
+        <label for="prompt-suffix2" class="suffix-option">Suffix (created from options below):</label>
+        <input id="prompt-suffix2" class="suffix suffix-option" type="text" disabled/>
+
+        <div class="spacer"></div>
+
+        <!--        <label for="dir-path-input2">Your files will be downloaded to this location:</label>-->
+        <input id="dir-path-input2" type="text" value="/" readonly style="display: none;"/>
+
+        <div class="spacer"></div>
+
+        <h2>Options</h2>
+        <div class="options">
+          <div class="column">
+            <table>
+              <tr>
+                <td><label for="mj-version">Version:&nbsp;</label></td>
+                <td>
+                  <select id="mj-version2">
+                    <option value=" --v 5.2" selected>Midjourney 5.2</option>
+                    <option value=" --v 5.1">Midjourney 5.1</option>
+                    <option value=" --v 5">Midjourney 5</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td><label for="mj-styling">Styling:&nbsp;</label></td>
+                <td>
+                  <select id="mj-styling2">
+                    <option value=" --s 0">0</option>
+                    <option value=" --s 250">250</option>
+                    <option value=" --s 500">500</option>
+                    <option value=" --s 750" selected>750</option>
+                    <option value=" --s 1000">1000</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td><label for="mj-chaos">Chaos:&nbsp;</label></td>
+                <td>
+                  <select id="mj-chaos2">
+                    <option value=" --c 0" selected>0</option>
+                    <option value=" --c 25">25</option>
+                    <option value=" --c 50">50</option>
+                    <option value=" --c 75">75</option>
+                    <option value=" --c 100">100</option>
+                  </select>
+                </td>
+              </tr>
+              <tr>
+                <td><label for="mj-ratio">Aspect Ratio:&nbsp;</label></td>
+                <td>
+                  <select id="mj-ratio2">
+                    <option value=" --ar 1:1" selected>square (1:1)</option>
+                    <option value=" --ar 3:4">photo vertical (3:4)</option>
+                    <option value=" --ar 4:3">photo horizontal (4:3)</option>
+                  </select>
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="column alignright">
+            <button id="import-file-path" type="button" class="submit-prompt" disabled>Send</button>
+            <div class="row download-link">
+              <a id="open-dir2" type="button">Download folder</a>&nbsp;|&nbsp;<a id="submit-dir-path2" type="button">Change location</a>
+            </div>
+          </div>
         </div>
+
       </form>
+
     </div>
+
+
 
     <!-- INSTRUCTIONS PAGE -->
     <div id="page-instructions">
