@@ -40,6 +40,23 @@ let pageInstructions: HTMLDivElement | null;
 let pageSettings: HTMLDivElement | null;
 let pageItems: Array<HTMLDivElement | null>;
 
+// settings
+let settingsDiscordBotToken: HTMLInputElement | null;
+let settingsDiscordAccountToken: HTMLInputElement | null;
+let settingsDiscordServerId: HTMLInputElement | null;
+let settingsDiscordChannelId: HTMLInputElement | null;
+let settingsDiscordUsername: HTMLInputElement | null;
+let settingsDiscordSubscriptionType: HTMLSelectElement | null;
+let saveSettings: HTMLButtonElement | null;
+let restoreSettings: HTMLButtonElement | null;
+let currentBotToken = "";
+let currentAccountToken= "";
+let currentServerId = "";
+let currentChannelId = "";
+let currentUsername = "";
+let currentSubscriptionType = "";
+
+
 async function send_prompt() {
   if (promptInputEl) {
     if (promptInputEl.value == "") // exit if input field is empty
@@ -311,6 +328,115 @@ function preventEmptyRepeat()
         repeatEl.value = "1";
 }
 
+function saveSettingsF() {
+    console.log("saveSettings");
+    // take all setting input elements
+    // invoke api save settings
+    // if ok, store all values to _current_:
+    // currentBotToken
+    // currentAccountToken
+    // currentServerId
+    // currentChannelId
+    // currentUsername
+    // currentSubscriptionType
+}
+
+function restoreSettingsF() {
+    if (!settingsDiscordBotToken ||
+        !settingsDiscordAccountToken ||
+        !settingsDiscordServerId ||
+        !settingsDiscordChannelId ||
+        !settingsDiscordUsername ||
+        !settingsDiscordSubscriptionType
+    )
+        return;
+
+    settingsDiscordBotToken.value = currentBotToken;
+    settingsDiscordAccountToken.value = currentAccountToken;
+    settingsDiscordServerId.value = currentServerId;
+    settingsDiscordChannelId.value = currentChannelId;
+    settingsDiscordUsername.value = currentUsername;
+    settingsDiscordSubscriptionType.value = currentSubscriptionType;
+
+    if (saveSettings)
+        saveSettings.disabled = true;
+}
+
+function settingsEdited(){
+    console.log("settingsEdited");
+    if (!saveSettings)
+        return;
+    //     !settingsDiscordBotToken ||
+    //     !settingsDiscordAccountToken ||
+    //     !settingsDiscordServerId ||
+    //     !settingsDiscordChannelId ||
+    //     !settingsDiscordUsername ||
+    //     !settingsDiscordSubscriptionType)
+    //     return;
+
+    // enable/disable the saveSettings button
+    if (settingsDiscordBotToken?.value == "" ||
+        settingsDiscordAccountToken?.value == "" ||
+        settingsDiscordServerId?.value == "" ||
+        settingsDiscordChannelId?.value == "" ||
+        settingsDiscordUsername?.value == "" ||
+        settingsDiscordSubscriptionType?.value == "" ||
+        (settingsDiscordBotToken?.value == currentBotToken &&
+            settingsDiscordAccountToken?.value == currentAccountToken &&
+            settingsDiscordServerId?.value == currentServerId &&
+            settingsDiscordChannelId?.value == currentChannelId &&
+            settingsDiscordUsername?.value == currentUsername &&
+            settingsDiscordSubscriptionType?.value == currentSubscriptionType)
+    )
+        saveSettings.disabled = true;
+
+    else
+        saveSettings.disabled = false;
+}
+
+async function readSettings() {
+    console.log("readSettings");
+    if (!settingsDiscordBotToken ||
+        !settingsDiscordAccountToken ||
+        !settingsDiscordServerId ||
+        !settingsDiscordChannelId ||
+        !settingsDiscordUsername ||
+        !settingsDiscordSubscriptionType
+    )
+        return;
+
+    let bot_token: string = "";
+    let main_token: string = "";
+    let server_id: string = "";
+    let channel_id: string = "";
+    let username: string = "";
+    let jobs_limit: string = "";
+    try {
+        [bot_token, main_token, server_id, channel_id, username, jobs_limit] =
+            await invoke('read_settings');
+
+    } catch (error) {
+        console.error('Error fetching settings', error);
+    }
+
+    settingsDiscordBotToken.value = bot_token;
+    settingsDiscordAccountToken.value = main_token;
+    settingsDiscordServerId.value = server_id;
+    settingsDiscordChannelId.value = channel_id;
+    settingsDiscordUsername.value = username;
+    settingsDiscordSubscriptionType.value = jobs_limit;
+
+    currentBotToken = settingsDiscordBotToken.value;
+    currentAccountToken = settingsDiscordAccountToken.value;
+    currentServerId = settingsDiscordServerId.value;
+    currentChannelId = settingsDiscordChannelId.value;
+    currentUsername = settingsDiscordUsername.value;
+    currentSubscriptionType = settingsDiscordSubscriptionType.value;
+
+    if (saveSettings)
+        saveSettings.disabled = true;
+}
+
 window.addEventListener("DOMContentLoaded", () => {
   console.log("loaded");
 
@@ -399,9 +525,30 @@ window.addEventListener("DOMContentLoaded", () => {
         optionStyling2?.addEventListener("change", updateSuffix2);
         optionChaos2?.addEventListener("change", updateSuffix2);
         optionRatio2?.addEventListener("change", updateSuffix2);
-
         updateSuffix();
         updateSuffix2();
+
+        // settings page
+        settingsDiscordBotToken = document.querySelector("#settings-discord-bot-token");
+        settingsDiscordAccountToken = document.querySelector("#settings-discord-account-token");
+        settingsDiscordServerId = document.querySelector("#settings-discord-server-id");
+        settingsDiscordChannelId = document.querySelector("#settings-discord-channel-id");
+        settingsDiscordUsername = document.querySelector("#settings-discord-username");
+        settingsDiscordSubscriptionType = document.querySelector("#settings-discord-subscription-type");
+        saveSettings = document.querySelector("#save-settings");
+        restoreSettings = document.querySelector("#restore-settings");
+
+        settingsDiscordBotToken?.addEventListener("input", settingsEdited);
+        settingsDiscordAccountToken?.addEventListener("input", settingsEdited);
+        settingsDiscordServerId?.addEventListener("input", settingsEdited);
+        settingsDiscordChannelId?.addEventListener("input", settingsEdited);
+        settingsDiscordUsername?.addEventListener("input", settingsEdited);
+        settingsDiscordSubscriptionType?.addEventListener("input", settingsEdited);
+        saveSettings?.addEventListener("click", saveSettingsF);
+        restoreSettings?.addEventListener("click", restoreSettingsF);
+        readSettings();
+
+
 
         // setTimeout(() => setInterval(updateStatus, 1000), 2000);
         setInterval(updateStatus, 1000);

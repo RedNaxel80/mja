@@ -12,7 +12,18 @@ use once_cell::sync::{Lazy, OnceCell};
 use reqwest;
 use reqwest::Client;
 use serde_json::{json, Value};
+use serde::Deserialize;
 use rand::Rng;
+
+#[derive(Deserialize)]
+struct Settings {
+    discord_bot_token: String,
+    discord_main_token: String,
+    discord_server_id: String,
+    discord_channel_id: String,
+    discord_username: String,
+    jobmanager_concurrent_jobs_limit: String,
+}
 
 static OPEN_PORT: OnceCell<u16> = OnceCell::new();
 static CLIENT: Lazy<Client> = Lazy::new(|| Client::new());
@@ -69,7 +80,9 @@ fn main() {
             get_dir_path,
             send_dir_path,
             open_dir,
-            get_status
+            get_status,
+            read_settings,
+            write_settings
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -78,6 +91,37 @@ fn main() {
     match _handle.join() {
         Ok(_) => println!("Server finished successfully."),
         Err(e) => println!("Server panicked: {:?}", e),
+    }
+}
+
+fn scan_ports(start: u16, end: u16) {
+    let mut rng = rand::thread_rng();
+    let random_start = rng.gen_range(start..=end);
+
+    for port in random_start..=end {
+        let address = format!("127.0.0.1:{}", port);
+        match std::net::TcpStream::connect(&address) {
+            Ok(_) => {
+                // The port is occupied, continue scanning
+                continue;
+            }
+            Err(_) => {
+                // The port is open, we can use it
+                let _ = OPEN_PORT.set(port);
+                return;
+            }
+        }
+        // sleep(Duration::from_secs(1));
+    }
+    for port in start..random_start {
+        let address = format!("127.0.0.1:{}", port);
+        match std::net::TcpStream::connect(&address) {
+            Ok(_) => continue, // Port is occupied
+            Err(_) => {
+                let _ = OPEN_PORT.set(port); // Port is open
+                return;
+            }
+        }
     }
 }
 
@@ -205,6 +249,22 @@ async fn send_dir_path(path: String) -> Result<(), String> {
 }
 
 #[tauri::command]
+fn open_dir(path: String) -> Result<(), String> {
+    let dir_path = Path::new(&path);
+
+    #[cfg(target_os = "windows")]
+        let _ = StdCommand::new("explorer").arg(dir_path).spawn();
+
+    #[cfg(target_os = "macos")]
+        let _ = StdCommand::new("open").arg(dir_path).spawn();
+
+    #[cfg(target_os = "linux")]
+        let _ = StdCommand::new("xdg-open").arg(dir_path).spawn();
+
+    Ok(())
+}
+
+#[tauri::command]
 async fn get_status() -> (String, String) {
     let port = OPEN_PORT.get().unwrap().to_string();
     let url = format!("http://localhost:{}/api/status", port);
@@ -230,49 +290,50 @@ async fn get_status() -> (String, String) {
 }
 
 #[tauri::command]
-fn open_dir(path: String) -> Result<(), String> {
-    let dir_path = Path::new(&path);
+async fn read_settings() -> (String, String, String, String, String, String) {
+    println!("read_settings");
+    let port = OPEN_PORT.get().unwrap().to_string();
+    let url = format!("http://localhost:{}/api/read_settings", port);
+    let res = CLIENT
+        .post(&url)
+        .send()
+        .await
+        .unwrap_or_else(|_| panic!("Failed to send request - read_settings"));
 
-    #[cfg(target_os = "windows")]
-        let _ = StdCommand::new("explorer").arg(dir_path).spawn();
+    let body = res
+        .text()
+        .await
+        .unwrap_or_else(|_| panic!("Failed to read response - read_settings"));
 
-    #[cfg(target_os = "macos")]
-        let _ = StdCommand::new("open").arg(dir_path).spawn();
+    println!("{:?}", body);
 
-    #[cfg(target_os = "linux")]
-        let _ = StdCommand::new("xdg-open").arg(dir_path).spawn();
+    // let settings_tuple = (
+    //     response.discord_bot_token,
+    //     response.discord_main_token,
+    //     response.discord_server_id,
+    //     response.discord_channel_id,
+    //     response.discord_username,
+    //     response.jobmanager_concurrent_jobs_limit,
+    // );
 
-    Ok(())
+    let bot_token = "1".to_string();
+    let main_token = "2".to_string();
+    let server_id = "3".to_string();
+    let channel_id = "4".to_string();
+    let username = "5".to_string();
+    let jobs_limit = "10".to_string();
+
+    (bot_token, main_token, server_id, channel_id, username, jobs_limit)
 }
 
-fn scan_ports(start: u16, end: u16) {
-    let mut rng = rand::thread_rng();
-    let random_start = rng.gen_range(start..=end);
 
-    for port in random_start..=end {
-        let address = format!("127.0.0.1:{}", port);
-        match std::net::TcpStream::connect(&address) {
-            Ok(_) => {
-                // The port is occupied, continue scanning
-                continue;
-            }
-            Err(_) => {
-                // The port is open, we can use it
-                let _ = OPEN_PORT.set(port);
-                return;
-            }
-        }
-        // sleep(Duration::from_secs(1));
-    }
-    for port in start..random_start {
-        let address = format!("127.0.0.1:{}", port);
-        match std::net::TcpStream::connect(&address) {
-            Ok(_) => continue, // Port is occupied
-            Err(_) => {
-                let _ = OPEN_PORT.set(port); // Port is open
-                return;
-            }
-        }
-    }
-}
 
+
+
+
+
+
+
+
+#[tauri::command]
+async fn write_settings() {}
