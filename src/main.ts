@@ -328,23 +328,6 @@ function preventEmptyRepeat(){
 }
 
 
-// async function send_prompt_file_path() {
-//     let suffixText = "";
-//     if (suffixEl)
-//         suffixText = suffixEl.value;
-//
-//     if (filePathEl) {
-//         await invoke("send_prompt_file_path_with_suffix", {
-//             path: filePathEl.value,
-//             suffix: suffixText
-//         });
-//         if (importBt) {
-//             importBt.disabled = true;
-//             filePathEl.value = "";
-//         }
-//     }
-// }
-
 async function saveSettingsF() {
     console.log("saveSettings");
     if (!settingsDiscordBotToken ||
@@ -359,10 +342,10 @@ async function saveSettingsF() {
     // take all setting input elements
     let discord_bot_token = settingsDiscordBotToken.value;
     let discord_main_token = settingsDiscordAccountToken.value;
-    let discord_server_id = parseInt(settingsDiscordServerId.value);
-    let discord_channel_id = parseInt(settingsDiscordChannelId.value);
+    let discord_server_id = settingsDiscordServerId.value;
+    let discord_channel_id = settingsDiscordChannelId.value;
     let discord_username = settingsDiscordUsername.value;
-    let jobmanager_concurrent_jobs_limit = parseInt(settingsDiscordSubscriptionType.value);
+    let jobmanager_concurrent_jobs_limit = settingsDiscordSubscriptionType.value;
 
     let values = {
       discord_bot_token: discord_bot_token,
@@ -373,25 +356,18 @@ async function saveSettingsF() {
       jobmanager_concurrent_jobs_limit: jobmanager_concurrent_jobs_limit
     };
 
-    // invoke api save settings
-    // await invoke('write_settings', {
-    //     bottoken: discord_bot_token,
-    //     maintoken: discord_main_token,
-    //     serverid: discord_server_id,
-    //     channelid: discord_channel_id,
-    //     username: discord_username,
-    //     jobslimit: jobmanager_concurrent_jobs_limit
-    // });
-
     await invoke('write_settings', {settings: values})
-    
+
     // if ok, store all values to _current_:
-    // currentBotToken = settingsDiscordBotToken.value;
-    // currentAccountToken = settingsDiscordAccountToken.value;
-    // currentServerId = settingsDiscordServerId.value;
-    // currentChannelId = settingsDiscordChannelId.value;
-    // currentUsername = settingsDiscordUsername.value;
-    // currentSubscriptionType = settingsDiscordSubscriptionType.value;
+    currentBotToken = settingsDiscordBotToken.value;
+    currentAccountToken = settingsDiscordAccountToken.value;
+    currentServerId = settingsDiscordServerId.value;
+    currentChannelId = settingsDiscordChannelId.value;
+    currentUsername = settingsDiscordUsername.value;
+    currentSubscriptionType = settingsDiscordSubscriptionType.value;
+
+    if (saveSettings)
+        saveSettings.disabled = true;
 }
 
 function restoreSettingsF() {
