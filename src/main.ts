@@ -319,8 +319,7 @@ function onRepeatChange(){
     repeatEl.value = repeatEl.value.replace(/[^0-9]/g, '');
 }
 
-function preventEmptyRepeat()
-{
+function preventEmptyRepeat(){
     if (repeatEl == null)
         return;
 
@@ -328,17 +327,71 @@ function preventEmptyRepeat()
         repeatEl.value = "1";
 }
 
-function saveSettingsF() {
+
+// async function send_prompt_file_path() {
+//     let suffixText = "";
+//     if (suffixEl)
+//         suffixText = suffixEl.value;
+//
+//     if (filePathEl) {
+//         await invoke("send_prompt_file_path_with_suffix", {
+//             path: filePathEl.value,
+//             suffix: suffixText
+//         });
+//         if (importBt) {
+//             importBt.disabled = true;
+//             filePathEl.value = "";
+//         }
+//     }
+// }
+
+async function saveSettingsF() {
     console.log("saveSettings");
+    if (!settingsDiscordBotToken ||
+    !settingsDiscordAccountToken ||
+    !settingsDiscordServerId ||
+    !settingsDiscordChannelId ||
+    !settingsDiscordUsername ||
+    !settingsDiscordSubscriptionType
+)
+    return;
+
     // take all setting input elements
+    let discord_bot_token = settingsDiscordBotToken.value;
+    let discord_main_token = settingsDiscordAccountToken.value;
+    let discord_server_id = parseInt(settingsDiscordServerId.value);
+    let discord_channel_id = parseInt(settingsDiscordChannelId.value);
+    let discord_username = settingsDiscordUsername.value;
+    let jobmanager_concurrent_jobs_limit = parseInt(settingsDiscordSubscriptionType.value);
+
+    let values = {
+      discord_bot_token: discord_bot_token,
+      discord_main_token: discord_main_token,
+      discord_server_id: discord_server_id,
+      discord_channel_id: discord_channel_id,
+      discord_username: discord_username,
+      jobmanager_concurrent_jobs_limit: jobmanager_concurrent_jobs_limit
+    };
+
     // invoke api save settings
+    // await invoke('write_settings', {
+    //     bottoken: discord_bot_token,
+    //     maintoken: discord_main_token,
+    //     serverid: discord_server_id,
+    //     channelid: discord_channel_id,
+    //     username: discord_username,
+    //     jobslimit: jobmanager_concurrent_jobs_limit
+    // });
+
+    await invoke('write_settings', {settings: values})
+    
     // if ok, store all values to _current_:
-    // currentBotToken
-    // currentAccountToken
-    // currentServerId
-    // currentChannelId
-    // currentUsername
-    // currentSubscriptionType
+    // currentBotToken = settingsDiscordBotToken.value;
+    // currentAccountToken = settingsDiscordAccountToken.value;
+    // currentServerId = settingsDiscordServerId.value;
+    // currentChannelId = settingsDiscordChannelId.value;
+    // currentUsername = settingsDiscordUsername.value;
+    // currentSubscriptionType = settingsDiscordSubscriptionType.value;
 }
 
 function restoreSettingsF() {
@@ -395,7 +448,6 @@ function settingsEdited(){
 }
 
 async function readSettings() {
-    console.log("readSettings");
     if (!settingsDiscordBotToken ||
         !settingsDiscordAccountToken ||
         !settingsDiscordServerId ||
@@ -405,26 +457,36 @@ async function readSettings() {
     )
         return;
 
-    let bot_token: string = "";
-    let main_token: string = "";
-    let server_id: string = "";
-    let channel_id: string = "";
-    let username: string = "";
-    let jobs_limit: string = "";
+    let discord_bot_token: string = "";
+    let discord_main_token: string = "";
+    let discord_server_id: string = "";
+    let discord_channel_id: string = "";
+    let discord_username: string = "";
+    let jobmanager_concurrent_jobs_limit: string = "";
     try {
-        [bot_token, main_token, server_id, channel_id, username, jobs_limit] =
-            await invoke('read_settings');
+        const settingsJson = await invoke('read_settings');
+        let settings;
+        if (typeof settingsJson === "string")
+            settings = JSON.parse(settingsJson);
+
+        // Now `settings` is a JavaScript object, you can access individual values like this:
+        discord_bot_token = settings.discord_bot_token;
+        discord_main_token = settings.discord_main_token;
+        discord_server_id = settings.discord_server_id;
+        discord_channel_id = settings.discord_channel_id;
+        discord_username = settings.discord_username;
+        jobmanager_concurrent_jobs_limit = settings.jobmanager_concurrent_jobs_limit;
 
     } catch (error) {
         console.error('Error fetching settings', error);
     }
 
-    settingsDiscordBotToken.value = bot_token;
-    settingsDiscordAccountToken.value = main_token;
-    settingsDiscordServerId.value = server_id;
-    settingsDiscordChannelId.value = channel_id;
-    settingsDiscordUsername.value = username;
-    settingsDiscordSubscriptionType.value = jobs_limit;
+    settingsDiscordBotToken.value = discord_bot_token;
+    settingsDiscordAccountToken.value = discord_main_token;
+    settingsDiscordServerId.value = discord_server_id;
+    settingsDiscordChannelId.value = discord_channel_id;
+    settingsDiscordUsername.value = discord_username;
+    settingsDiscordSubscriptionType.value = jobmanager_concurrent_jobs_limit;
 
     currentBotToken = settingsDiscordBotToken.value;
     currentAccountToken = settingsDiscordAccountToken.value;

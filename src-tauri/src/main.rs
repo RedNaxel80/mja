@@ -12,17 +12,22 @@ use once_cell::sync::{Lazy, OnceCell};
 use reqwest;
 use reqwest::Client;
 use serde_json::{json, Value};
-use serde::Deserialize;
+use serde::{Serialize, Deserialize};
 use rand::Rng;
 
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 struct Settings {
     discord_bot_token: String,
     discord_main_token: String,
-    discord_server_id: String,
-    discord_channel_id: String,
+    discord_server_id: i64,
+    discord_channel_id: i64,
     discord_username: String,
-    jobmanager_concurrent_jobs_limit: String,
+    jobmanager_concurrent_jobs_limit: i64,
+}
+
+#[derive(Serialize, Deserialize)]
+struct Data {
+    result: Settings
 }
 
 static OPEN_PORT: OnceCell<u16> = OnceCell::new();
@@ -65,8 +70,10 @@ fn main() {
     let server_url = format!("http://localhost:{}", port_arg);
     loop {
         match client.get(&server_url).send() {
-            Ok(_) => break, // Server has started, break the loop
-            Err(_) => thread::sleep(std::time::Duration::from_millis(100)), // Sleep for a short duration before trying again
+            // Server has started, break the loop
+            Ok(_) => break,
+            // Sleep for a short duration before trying again
+            Err(_) => thread::sleep(std::time::Duration::from_millis(100)),
         }
     }
 
@@ -75,7 +82,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             start_api,
             send_prompt,
-            send_prompt_file_path,
+            // send_prompt_file_path,
             send_prompt_file_path_with_suffix,
             get_dir_path,
             send_dir_path,
@@ -164,27 +171,27 @@ async fn send_prompt(prompt: String) -> Result<(), String> {
     }
 }
 
-#[tauri::command]
-async fn send_prompt_file_path(path: String) -> Result<(), String> {
-    let filepath = Path::new(&path);
-    // println!("{:?}", filepath);
-    let port = OPEN_PORT.get().unwrap().to_string();
-    let url = format!("http://127.0.0.1:{}/api/send-filepath", port);
-    let res = CLIENT
-        .post(&url)
-        .json(&json!({ "filepath": filepath }))
-        .send()
-        .await
-        .map_err(|e| e.to_string())?;
-
-    if res.status().is_success() {
-        let _response_text = res.text().await.map_err(|e| e.to_string())?;
-        // println!("{}", response_text);
-        Ok(())
-    } else {
-        Err("Failed to send the request set-download-dir".into())
-    }
-}
+// #[tauri::command]
+// async fn send_prompt_file_path(path: String) -> Result<(), String> {
+//     let filepath = Path::new(&path);
+//     // println!("{:?}", filepath);
+//     let port = OPEN_PORT.get().unwrap().to_string();
+//     let url = format!("http://127.0.0.1:{}/api/send-filepath", port);
+//     let res = CLIENT
+//         .post(&url)
+//         .json(&json!({ "filepath": filepath }))
+//         .send()
+//         .await
+//         .map_err(|e| e.to_string())?;
+//
+//     if res.status().is_success() {
+//         let _response_text = res.text().await.map_err(|e| e.to_string())?;
+//         // println!("{}", response_text);
+//         Ok(())
+//     } else {
+//         Err("Failed to send the request set-download-dir".into())
+//     }
+// }
 
 #[tauri::command]
 async fn send_prompt_file_path_with_suffix(path: String, suffix: String) -> Result<(), String> {
@@ -202,7 +209,7 @@ async fn send_prompt_file_path_with_suffix(path: String, suffix: String) -> Resu
 
     if res.status().is_success() {
         let _response_text = res.text().await.map_err(|e| e.to_string())?;
-        // println!("{}", response_text);
+        // println!("{}", _response_text);
         Ok(())
     } else {
         Err("Failed to send the request set-download-dir".into())
@@ -281,7 +288,10 @@ async fn get_status() -> (String, String) {
 
     // Parse the body into a JSON Value
     let parsed: Value =
-        serde_json::from_str(&body).unwrap_or_else(|_| panic!("Failed to parse response - status"));
+        serde_json::from_str(&body).unwrap_or_else(|_| panic!("Failed parse response - status"));
+
+    // println!("{}", body);
+    // println!("{}", parsed["status"]);
 
     // Extract the "status" and "counter" fields
     let status = parsed["status"].as_str().unwrap_or("").to_string();
@@ -290,10 +300,9 @@ async fn get_status() -> (String, String) {
 }
 
 #[tauri::command]
-async fn read_settings() -> (String, String, String, String, String, String) {
-    println!("read_settings");
+async fn read_settings() -> String {
     let port = OPEN_PORT.get().unwrap().to_string();
-    let url = format!("http://localhost:{}/api/read_settings", port);
+    let url = format!("http://localhost:{}/api/read-settings", port);
     let res = CLIENT
         .post(&url)
         .send()
@@ -305,35 +314,64 @@ async fn read_settings() -> (String, String, String, String, String, String) {
         .await
         .unwrap_or_else(|_| panic!("Failed to read response - read_settings"));
 
-    println!("{:?}", body);
+    let data: Data = serde_json::from_str(&body).unwrap();
+    let flattened_data_json = serde_json::to_string(&data.result).unwrap();
 
-    // let settings_tuple = (
-    //     response.discord_bot_token,
-    //     response.discord_main_token,
-    //     response.discord_server_id,
-    //     response.discord_channel_id,
-    //     response.discord_username,
-    //     response.jobmanager_concurrent_jobs_limit,
-    // );
-
-    let bot_token = "1".to_string();
-    let main_token = "2".to_string();
-    let server_id = "3".to_string();
-    let channel_id = "4".to_string();
-    let username = "5".to_string();
-    let jobs_limit = "10".to_string();
-
-    (bot_token, main_token, server_id, channel_id, username, jobs_limit)
+    flattened_data_json
 }
 
-
-
-
-
-
-
-
-
+// #[tauri::command]
+// async fn write_settings(bottoken: String,
+//                         maintoken: String,
+//                         serverid: i64,
+//                         channelid: i64,
+//                         username: String,
+//                         jobslimit: i64) -> Result<(), String> {
+//
+//     let port = OPEN_PORT.get().unwrap().to_string();
+//     let url = format!("http://127.0.0.1:{}/api/write-settings", port);
+//     let res = CLIENT
+//         .post(&url)
+//         .json(&json!({
+//                     "discord_bot_token": bottoken,
+//                     "discord_main_token": maintoken,
+//                     "discord_server_id": serverid,
+//                     "discord_channel_id": channelid,
+//                     "discord_username": username,
+//                     "jobmanager_concurrent_jobs_limit": jobslimit
+//         }))
+//         .send()
+//         .await
+//         .map_err(|e| e.to_string())?;
+//
+//     if res.status().is_success() {
+//         let _response_text = res.text().await.map_err(|e| e.to_string())?;
+//         // println!("{}", _response_text);
+//         Ok(())
+//     } else {
+//         Err("Failed to send the request write-settings".into())
+//     }
+//
+// }
 
 #[tauri::command]
-async fn write_settings() {}
+async fn write_settings(settings: Settings) -> Result<(), String> {
+
+    let port = OPEN_PORT.get().unwrap().to_string();
+    let url = format!("http://127.0.0.1:{}/api/write-settings", port);
+    let res = CLIENT
+        .post(&url)
+        .json(&settings)
+        .send()
+        .await
+        .map_err(|e| e.to_string())?;
+
+    if res.status().is_success() {
+        let _response_text = res.text().await.map_err(|e| e.to_string())?;
+        // println!("{}", _response_text);
+        Ok(())
+    } else {
+        Err("Failed to send the request write-settings".into())
+    }
+
+}

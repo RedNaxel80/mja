@@ -44,7 +44,7 @@
         "resizable": false,
         "title": "MJ Auto",
         "width": 820,
-        "height": 500,
+        "height": 520,
         "url": "src/index.html",
         "visible": true,
         "hiddenTitle": false
