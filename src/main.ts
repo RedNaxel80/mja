@@ -208,6 +208,10 @@ async function updateStatus() {
   }
 }
 
+async function keepAlive() {
+    await invoke('keep_alive');
+}
+
 function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -410,7 +414,7 @@ async function saveSettingsF() {
         saveSettings.disabled = true;
 
     statusBool = false;
-    showOverlay("Saving and restarting. Please wait...");
+    showOverlay("Saving and shutting down. Please wait...");
     await delay(12000); // delay for 10 seconds
     await invoke("quit_app");
 }
@@ -635,13 +639,15 @@ window.addEventListener("DOMContentLoaded", async () => {
     main_assigner();
 
     let result = await invoke("first_run_check");
+    console.log(result);
     if (result === "yes") {
         console.log("first check passed");
         app_start();
     }
     else {
         console.log("first check failed");
-
+        setInterval(keepAlive, 1000);
+        await readSettings();
         hideOverlay();
         pageHideAll();
         if (menuDiv) menuDiv.style.display = "none";

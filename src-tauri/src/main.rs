@@ -90,7 +90,8 @@ fn main() {
             read_settings,
             write_settings,
             first_run_check,
-            quit_app
+            quit_app,
+            keep_alive
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -310,7 +311,7 @@ async fn write_settings(settings: Settings) -> Result<(), String> {
 
     if res.status().is_success() {
         let _response_text = res.text().await.map_err(|e| e.to_string())?;
-        // println!("{}", _response_text);
+        println!("{}", _response_text);
         Ok(())
     } else {
         Err("Failed to send the request write-settings".into())
@@ -323,7 +324,31 @@ fn quit_app(window: tauri::Window) {
 }
 
 #[tauri::command]
-fn first_run_check() -> String {
-    let check = "yes".to_string();
+async fn first_run_check() -> String {
+    // let check = "no".to_string();
+    // check
+    let port = OPEN_PORT.get().unwrap().to_string();
+    let url = format!("http://127.0.0.1:{}/api/config-done", port);
+    let res = CLIENT
+        .post(&url)
+        .send()
+        .await
+        .unwrap_or_else(|_| panic!("Failed to send request - get-download-dir"));
+
+    let check = res
+        .text()
+        .await
+        .unwrap_or_else(|_| panic!("Failed to read response - get-download-dir"));
     check
+}
+
+#[tauri::command]
+async fn keep_alive() {
+    let port = OPEN_PORT.get().unwrap().to_string();
+    let url = format!("http://localhost:{}/api/keep-alive", port);
+    let res = CLIENT
+        .post(&url)
+        .send()
+        .await
+        .unwrap_or_else(|_| panic!("Failed to send request - keep-alive"));
 }
