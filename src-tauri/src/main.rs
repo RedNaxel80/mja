@@ -346,7 +346,7 @@ async fn first_run_check() -> String {
 async fn keep_alive() {
     let port = OPEN_PORT.get().unwrap().to_string();
     let url = format!("http://localhost:{}/api/keep-alive", port);
-    let res = CLIENT
+    CLIENT
         .post(&url)
         .send()
         .await
