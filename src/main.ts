@@ -9,6 +9,7 @@ let statusEl: HTMLElement | null;
 let suffixEl: HTMLInputElement | null;
 let suffixEl2: HTMLInputElement | null;
 let repeatEl: HTMLInputElement | null;
+let statusBool = true;
 
 // submit buttons
 let importBt: HTMLButtonElement | null;
@@ -25,6 +26,7 @@ let optionChaos2: HTMLSelectElement | null;
 let optionRatio2: HTMLSelectElement | null;
 
 // menu items
+let menuDiv: HTMLDivElement | null;
 let menuWelcome: HTMLLIElement | null;
 let menuSendPrompts: HTMLLIElement | null;
 let menuSendFile: HTMLLIElement | null;
@@ -181,6 +183,8 @@ let lastCounter2: String = "0";
 let lastCounter3: String = "0";
 
 async function updateStatus() {
+  if (!statusBool) return;
+
   let status: String = "starting";
   let counters: String = "0, 0, 0";
   try {
@@ -295,6 +299,11 @@ function onPromptChange() {
     if (sendBt == null || promptInputEl == null)
         return;
 
+    let selectionStart = promptInputEl.selectionStart;
+    let selectionEnd = promptInputEl.selectionEnd;
+    let originalLength = promptInputEl.value.length;
+    let newLength = 0;
+
     if (promptInputEl.value == "")
         sendBt.disabled = true;
     else
@@ -305,8 +314,12 @@ function onPromptChange() {
             let regex = new RegExp(char, "g");
             promptInputEl.value = promptInputEl.value.replace(regex, replacements[char]);
         }
-        promptInputEl.selectionStart = promptInputEl.selectionEnd = promptInputEl.value.length;
+        newLength = promptInputEl.value.length;
 
+        // promptInputEl.selectionStart = promptInputEl.selectionEnd = promptInputEl.value.length;
+        let difference = Math.abs(originalLength - newLength);
+        promptInputEl.selectionStart = selectionStart + difference;
+        promptInputEl.selectionEnd = selectionEnd + difference;
     }
 
 }
@@ -327,8 +340,23 @@ function preventEmptyRepeat(){
         repeatEl.value = "1";
 }
 
+function confirmAsync(message: string): Promise<boolean> {
+    return new Promise((resolve, reject) => {
+        let result = window.confirm(message);
+        resolve(result);
+    });
+}
 
 async function saveSettingsF() {
+    let confirmed = await confirmAsync("Saving settings will force the app to quit, so you might lose all currently queued prompts.");
+    console.log(confirmed);
+    if (!confirmed)
+    {
+        if (saveSettings) saveSettings.disabled = false;
+        return;
+    }
+
+
     console.log("saveSettings");
     if (!settingsDiscordBotToken ||
     !settingsDiscordAccountToken ||
@@ -424,6 +452,7 @@ function settingsEdited(){
 }
 
 async function readSettings() {
+    console.log("reading settings");
     if (!settingsDiscordBotToken ||
         !settingsDiscordAccountToken ||
         !settingsDiscordServerId ||
@@ -475,124 +504,143 @@ async function readSettings() {
         saveSettings.disabled = true;
 }
 
-window.addEventListener("DOMContentLoaded", () => {
-  console.log("loaded");
+function app_start() {
+            startApiWithRetry(5, 1000) // tries 5 times, waiting 2000 milliseconds between each attempt
+            .then(() => {
+                hideOverlay();
+                console.log("API started")
+                updateSuffix();
+                updateSuffix2();
+                readSettings();
+                // setTimeout(() => setInterval(updateStatus, 1000), 2000);
+                setInterval(updateStatus, 1000);
+            })
+            .catch(error => console.log(error.message));
+}
 
-  // check for the first run (settings completed)
-  // if it's first run (or not completed setup)
+function main_assigner() {
+            // inject the path value to the input field
+            dirPathEl = document.querySelector("#dir-path-input");
+            dirPathEl2 = document.querySelector("#dir-path-input2");
+            get_dir_path().then((path) => {
+                if (path) dirPathEl!.value = path;
+                if (path) dirPathEl2!.value = path;
+            });
+
+            // main elements
+            promptInputEl = document.querySelector("#prompt-input");
+            filePathEl = document.querySelector("#file-path-input");
+            suffixEl = document.querySelector("#prompt-suffix");
+            suffixEl2 = document.querySelector("#prompt-suffix2");
+            statusEl = document.querySelector("#footer");
+            importBt = document.querySelector("#import-file-path");
+            sendBt = document.querySelector("#send-prompt");
+            repeatEl = document.querySelector("#repeat-number");
+
+            // side menu items
+            menuDiv = document.querySelector(".menu");
+            menuWelcome = document.querySelector("#menu-welcome");
+            menuSendPrompts = document.querySelector("#menu-send-prompts");
+            menuSendFile = document.querySelector("#menu-send-file");
+            menuSettings = document.querySelector("#menu-settings");
+            menuInstructions = document.querySelector("#menu-instructions");
+            menuItems = [menuWelcome, menuSendPrompts, menuSendFile, menuInstructions, menuSettings];
+
+            // page items
+            pageWelcome = document.querySelector("#page-welcome");
+            pageSendPrompts = document.querySelector("#page-send-prompts");
+            pageSendFile = document.querySelector("#page-send-file");
+            pageSettings = document.querySelector("#page-settings");
+            pageInstructions = document.querySelector("#page-instructions");
+            pageItems = [pageWelcome, pageSendPrompts, pageSendFile, pageInstructions, pageSettings];
+
+            menuWelcome?.addEventListener("click", (event) => switchPage(event, pageWelcome));
+            menuSendPrompts?.addEventListener("click", (event) => switchPage(event, pageSendPrompts));
+            menuSendFile?.addEventListener("click", (event) => switchPage(event, pageSendFile));
+            menuSettings?.addEventListener("click", (event) => switchPage(event, pageSettings));
+            menuInstructions?.addEventListener("click", (event) => switchPage(event, pageInstructions));
+
+            // main functions
+            sendBt?.addEventListener("click", send_prompt);
+            promptInputEl?.addEventListener("input", onPromptChange);
+            repeatEl?.addEventListener("input", onRepeatChange);
+            repeatEl?.addEventListener("change", preventEmptyRepeat);
+            document.querySelector("#select-file")?.addEventListener("click", selectFile);
+            importBt?.addEventListener("click", send_prompt_file_path);
+            document.querySelector("#submit-dir-path")?.addEventListener("click", selectFolder);
+            document.querySelector("#open-dir")?.addEventListener("click", open_dir);
+            document.querySelector("#submit-dir-path2")?.addEventListener("click", selectFolder);
+            document.querySelector("#open-dir2")?.addEventListener("click", open_dir);
+            // document.querySelector('#openFileBtn')?.addEventListener('click', () => {document.getElementById('fileInput')?.click();});
+
+            // options insert to suffix
+            optionVersion = document.querySelector("#mj-version");
+            optionStyling = document.querySelector("#mj-styling");
+            optionChaos = document.querySelector("#mj-chaos");
+            optionRatio = document.querySelector("#mj-ratio");
+            optionVersion2 = document.querySelector("#mj-version2");
+            optionStyling2 = document.querySelector("#mj-styling2");
+            optionChaos2 = document.querySelector("#mj-chaos2");
+            optionRatio2 = document.querySelector("#mj-ratio2");
+
+            optionVersion?.addEventListener("change", updateSuffix);
+            optionStyling?.addEventListener("change", updateSuffix);
+            optionChaos?.addEventListener("change", updateSuffix);
+            optionRatio?.addEventListener("change", updateSuffix);
+            optionVersion2?.addEventListener("change", updateSuffix2);
+            optionStyling2?.addEventListener("change", updateSuffix2);
+            optionChaos2?.addEventListener("change", updateSuffix2);
+            optionRatio2?.addEventListener("change", updateSuffix2);
+
+
+            // settings page
+            settingsDiscordBotToken = document.querySelector("#settings-discord-bot-token");
+            settingsDiscordAccountToken = document.querySelector("#settings-discord-account-token");
+            settingsDiscordServerId = document.querySelector("#settings-discord-server-id");
+            settingsDiscordChannelId = document.querySelector("#settings-discord-channel-id");
+            settingsDiscordUsername = document.querySelector("#settings-discord-username");
+            settingsDiscordSubscriptionType = document.querySelector("#settings-discord-subscription-type");
+            saveSettings = document.querySelector("#save-settings");
+            restoreSettings = document.querySelector("#restore-settings");
+
+            settingsDiscordBotToken?.addEventListener("input", settingsEdited);
+            settingsDiscordAccountToken?.addEventListener("input", settingsEdited);
+            settingsDiscordServerId?.addEventListener("input", settingsEdited);
+            settingsDiscordChannelId?.addEventListener("input", settingsEdited);
+            settingsDiscordUsername?.addEventListener("input", settingsEdited);
+            settingsDiscordSubscriptionType?.addEventListener("input", settingsEdited);
+            saveSettings?.addEventListener("click", saveSettingsF);
+            restoreSettings?.addEventListener("click", restoreSettingsF);
+}
+
+window.addEventListener("DOMContentLoaded", async () => {
+    console.log("loaded");
+    main_assigner();
+
+    let result = await invoke("first_run_check");
+    if (result === "true") {
+        console.log("first check passed");
+        app_start();
+    }
+    else {
+        console.log("first check failed");
+
+        hideOverlay();
+        pageHideAll();
+        if (menuDiv) menuDiv.style.display = "none";
+        if (pageSettings) pageSettings.style.display = "block";
+        alert("This seems to be the first time you run this app - please enter the proper settings.");
+    }
+
+
+    // check for the first run (settings completed)
+    // if it's first run (or not completed setup)
     // disable menu
     // switch to settings page
     // on save do alert about restart
     // fake take time (10s)
     // quit (restart if possible)
-  // if they are ok, continue to start api
-
-  startApiWithRetry(5, 1000) // tries 5 times, waiting 2000 milliseconds between each attempt
-      .then(() => {
-        hideOverlay();
-        console.log("API started")
-
-        // inject the path value to the input field
-        dirPathEl = document.querySelector("#dir-path-input");
-        dirPathEl2 = document.querySelector("#dir-path-input2");
-        get_dir_path().then((path) => {
-          if(path) dirPathEl!.value = path;
-          if(path) dirPathEl2!.value = path;
-        });
-
-        // main elements
-        promptInputEl = document.querySelector("#prompt-input");
-        filePathEl = document.querySelector("#file-path-input");
-        suffixEl = document.querySelector("#prompt-suffix");
-        suffixEl2 = document.querySelector("#prompt-suffix2");
-        statusEl = document.querySelector("#footer");
-        importBt = document.querySelector("#import-file-path");
-        sendBt = document.querySelector("#send-prompt");
-        repeatEl = document.querySelector("#repeat-number");
-
-        // side menu items
-        menuWelcome = document.querySelector("#menu-welcome");
-        menuSendPrompts = document.querySelector("#menu-send-prompts");
-        menuSendFile = document.querySelector("#menu-send-file");
-        menuSettings = document.querySelector("#menu-settings");
-        menuInstructions = document.querySelector("#menu-instructions");
-        menuItems = [menuWelcome, menuSendPrompts, menuSendFile, menuInstructions, menuSettings];
-
-        // page items
-        pageWelcome = document.querySelector("#page-welcome");
-        pageSendPrompts = document.querySelector("#page-send-prompts");
-        pageSendFile = document.querySelector("#page-send-file");
-        pageSettings = document.querySelector("#page-settings");
-        pageInstructions = document.querySelector("#page-instructions");
-        pageItems = [pageWelcome, pageSendPrompts, pageSendFile, pageInstructions, pageSettings];
-
-        menuWelcome?.addEventListener("click", (event) => switchPage(event, pageWelcome));
-        menuSendPrompts?.addEventListener("click", (event) => switchPage(event, pageSendPrompts));
-        menuSendFile?.addEventListener("click", (event) => switchPage(event, pageSendFile));
-        menuSettings?.addEventListener("click", (event) => switchPage(event, pageSettings));
-        menuInstructions?.addEventListener("click", (event) => switchPage(event, pageInstructions));
-
-        // main functions
-        sendBt?.addEventListener("click", send_prompt);
-        promptInputEl?.addEventListener("input", onPromptChange);
-        repeatEl?.addEventListener("input", onRepeatChange);
-        repeatEl?.addEventListener("change", preventEmptyRepeat);
-        document.querySelector("#select-file")?.addEventListener("click", selectFile);
-        importBt?.addEventListener("click", send_prompt_file_path);
-        document.querySelector("#submit-dir-path")?.addEventListener("click", selectFolder);
-        document.querySelector("#open-dir")?.addEventListener("click", open_dir);
-        document.querySelector("#submit-dir-path2")?.addEventListener("click", selectFolder);
-        document.querySelector("#open-dir2")?.addEventListener("click", open_dir);
-        // document.querySelector('#openFileBtn')?.addEventListener('click', () => {document.getElementById('fileInput')?.click();});
-
-        // options insert to suffix
-        optionVersion = document.querySelector("#mj-version");
-        optionStyling = document.querySelector("#mj-styling");
-        optionChaos = document.querySelector("#mj-chaos");
-        optionRatio = document.querySelector("#mj-ratio");
-        optionVersion2 = document.querySelector("#mj-version2");
-        optionStyling2 = document.querySelector("#mj-styling2");
-        optionChaos2 = document.querySelector("#mj-chaos2");
-        optionRatio2 = document.querySelector("#mj-ratio2");
-
-        optionVersion?.addEventListener("change", updateSuffix);
-        optionStyling?.addEventListener("change", updateSuffix);
-        optionChaos?.addEventListener("change", updateSuffix);
-        optionRatio?.addEventListener("change", updateSuffix);
-        optionVersion2?.addEventListener("change", updateSuffix2);
-        optionStyling2?.addEventListener("change", updateSuffix2);
-        optionChaos2?.addEventListener("change", updateSuffix2);
-        optionRatio2?.addEventListener("change", updateSuffix2);
-        updateSuffix();
-        updateSuffix2();
-
-        // settings page
-        settingsDiscordBotToken = document.querySelector("#settings-discord-bot-token");
-        settingsDiscordAccountToken = document.querySelector("#settings-discord-account-token");
-        settingsDiscordServerId = document.querySelector("#settings-discord-server-id");
-        settingsDiscordChannelId = document.querySelector("#settings-discord-channel-id");
-        settingsDiscordUsername = document.querySelector("#settings-discord-username");
-        settingsDiscordSubscriptionType = document.querySelector("#settings-discord-subscription-type");
-        saveSettings = document.querySelector("#save-settings");
-        restoreSettings = document.querySelector("#restore-settings");
-
-        settingsDiscordBotToken?.addEventListener("input", settingsEdited);
-        settingsDiscordAccountToken?.addEventListener("input", settingsEdited);
-        settingsDiscordServerId?.addEventListener("input", settingsEdited);
-        settingsDiscordChannelId?.addEventListener("input", settingsEdited);
-        settingsDiscordUsername?.addEventListener("input", settingsEdited);
-        settingsDiscordSubscriptionType?.addEventListener("input", settingsEdited);
-        saveSettings?.addEventListener("click", saveSettingsF);
-        restoreSettings?.addEventListener("click", restoreSettingsF);
-        readSettings();
-
-
-
-        // setTimeout(() => setInterval(updateStatus, 1000), 2000);
-        setInterval(updateStatus, 1000);
-
-      })
-      .catch(error => console.log(error.message));
+    // if they are ok, continue to start api
 
 
 

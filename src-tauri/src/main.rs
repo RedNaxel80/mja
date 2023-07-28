@@ -88,7 +88,8 @@ fn main() {
             open_dir,
             get_status,
             read_settings,
-            write_settings
+            write_settings,
+            first_run_check
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -313,4 +314,10 @@ async fn write_settings(settings: Settings) -> Result<(), String> {
     } else {
         Err("Failed to send the request write-settings".into())
     }
+}
+
+#[tauri::command]
+fn first_run_check() -> String {
+    let check = "true".to_string();
+    check
 }
