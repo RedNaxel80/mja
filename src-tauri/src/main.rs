@@ -89,7 +89,8 @@ fn main() {
             get_status,
             read_settings,
             write_settings,
-            first_run_check
+            first_run_check,
+            quit_app
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
@@ -317,7 +318,12 @@ async fn write_settings(settings: Settings) -> Result<(), String> {
 }
 
 #[tauri::command]
+fn quit_app(window: tauri::Window) {
+    window.close().unwrap();
+}
+
+#[tauri::command]
 fn first_run_check() -> String {
-    let check = "true".to_string();
+    let check = "yes".to_string();
     check
 }

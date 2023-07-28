@@ -19,7 +19,8 @@
         "open": true,
         "sidecar": true,
         "scope":[{"name": "binaries/api", "sidecar": true}]
-      }
+      },
+      "process": { "exit":  true, "relaunch":  true}
     },
     "bundle": {
       "active": true,

@@ -231,6 +231,16 @@ function hideOverlay() {
     overlay.style.display = 'none';
 }
 
+function showOverlay(message = "Please wait...") {
+  const overlay = document.getElementById("overlay");
+  const overlayText = document.getElementById("loadingText");
+
+  if (overlayText) overlayText.innerText = message;
+
+  if (overlay)
+    overlay.style.display = 'flex';
+}
+
 function pageHideAll() {
   pageItems.forEach((pageItem) => {
     if (pageItem !== null) {
@@ -348,7 +358,9 @@ function confirmAsync(message: string): Promise<boolean> {
 }
 
 async function saveSettingsF() {
-    let confirmed = await confirmAsync("Saving settings will force the app to quit, so you might lose all currently queued prompts.");
+    let confirmed = await confirmAsync("Saving settings will force the app to quit, " +
+        "so you will lose all currently queued prompts. You will need to relaunch the app when it closes. " +
+        "Do you want to proceed?");
     console.log(confirmed);
     if (!confirmed)
     {
@@ -396,6 +408,11 @@ async function saveSettingsF() {
 
     if (saveSettings)
         saveSettings.disabled = true;
+
+    statusBool = false;
+    showOverlay("Saving and restarting. Please wait...");
+    await delay(12000); // delay for 10 seconds
+    await invoke("quit_app");
 }
 
 function restoreSettingsF() {
@@ -618,7 +635,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     main_assigner();
 
     let result = await invoke("first_run_check");
-    if (result === "true") {
+    if (result === "yes") {
         console.log("first check passed");
         app_start();
     }
