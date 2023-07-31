@@ -324,65 +324,67 @@ button.submit-prompt:hover{
 
 
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #f6f6f6;
+    background-color: #2f2f2f;
+  }
+
+  a:hover {
+    color: #24c8db;
+  }
+
+  input,
+  button,
+  textarea,
+  select {
+    color: #f6f6f6;
+    background-color: #0f0f0f98;
+  }
+  select {
+  border-color: #3e3e3e;
+  }
+
+  button:active {
+    background-color: #0f0f0f69;
+  }
+
+  #footer{
+    color: #f6f6f6;
+    background-color: #101010;
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: #666;
+  }
+
+  button[disabled],
+  input[disabled],
+  input[readonly] {
+    background: #242424;
+    color: #777;
+  }
+
+  /* This will change the color of the scrollbar track (background) */
+  textarea::-webkit-scrollbar-track {
+    background: #202020;
+    color: red;
+  }
+
+  /* This will change the color of the scrollbar thumb (the part you drag) */
+  textarea::-webkit-scrollbar-thumb {
+    background: #888;
+
+  }
+
+  /* Change the color of the scrollbar thumb when it's hovered */
+  textarea::-webkit-scrollbar-thumb:hover {
+    background: #555;
+
+  }
 
 
-
-/*@media (prefers-color-scheme: dark) {*/
-/*  :root {*/
-/*    color: #f6f6f6;*/
-/*    background-color: #2f2f2f;*/
-/*  }*/
-
-/*  a:hover {*/
-/*    color: #24c8db;*/
-/*  }*/
-
-/*  input,*/
-/*  button,*/
-/*  textarea {*/
-/*    color: #f6f6f6;*/
-/*    background-color: #0f0f0f98;*/
-/*  }*/
-/*  button:active {*/
-/*    background-color: #0f0f0f69;*/
-/*  }*/
-
-/*  #footer{*/
-/*    color: #f6f6f6;*/
-/*    background-color: #101010;*/
-/*  }*/
-
-/*  input::placeholder, textarea::placeholder {*/
-/*    color: #666;*/
-/*  }*/
-
-/*  button[disabled],*/
-/*  input[disabled],*/
-/*  input[readonly] {*/
-/*    background: #242424;*/
-/*    color: #777;*/
-/*  }*/
-
-/*  !* This will change the color of the scrollbar track (background) *!*/
-/*  textarea::-webkit-scrollbar-track {*/
-/*    background: #202020;*/
-/*    color: red;*/
-/*  }*/
-
-/*  !* This will change the color of the scrollbar thumb (the part you drag) *!*/
-/*  textarea::-webkit-scrollbar-thumb {*/
-/*    background: #888;*/
-
-/*  }*/
-
-/*  !* Change the color of the scrollbar thumb when it's hovered *!*/
-/*  textarea::-webkit-scrollbar-thumb:hover {*/
-/*    background: #555;*/
-
-/*  }*/
-
-
-/*}*/
+}
 
 
 

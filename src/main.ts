@@ -355,7 +355,7 @@ function preventEmptyRepeat(){
 }
 
 function confirmAsync(message: string): Promise<boolean> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         let result = window.confirm(message);
         resolve(result);
     });
