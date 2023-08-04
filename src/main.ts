@@ -496,12 +496,12 @@ async function readSettings() {
             settings = JSON.parse(settingsJson);
 
         // Now `settings` is a JavaScript object, you can access individual values like this:
-        discord_bot_token = settings.discord_bot_token;
-        discord_main_token = settings.discord_main_token;
-        discord_server_id = settings.discord_server_id;
-        discord_channel_id = settings.discord_channel_id;
-        discord_username = settings.discord_username;
-        jobmanager_concurrent_jobs_limit = settings.jobmanager_concurrent_jobs_limit;
+        discord_bot_token = settings.discord_bot_token.toString();
+        discord_main_token = settings.discord_main_token.toString();
+        discord_server_id = settings.discord_server_id.toString();
+        discord_channel_id = settings.discord_channel_id.toString();
+        discord_username = settings.discord_username.toString();
+        jobmanager_concurrent_jobs_limit = settings.jobmanager_concurrent_jobs_limit.toString();
 
     } catch (error) {
         console.error('Error fetching settings', error);
