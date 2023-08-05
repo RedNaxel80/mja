@@ -25,7 +25,7 @@
     "bundle": {
       "active": true,
       "targets": "all",
-      "identifier": "com.redxdd.mja",
+      "identifier": "com.redxdd.mjb",
       "icon": [
         "icons/32x32.png",
         "icons/128x128.png",
@@ -43,7 +43,7 @@
         "label": "main",
         "fullscreen": false,
         "resizable": false,
-        "title": "MJ Auto",
+        "title": "MJ Batcher",
         "width": 820,
         "height": 520,
         "url": "src/index.html",
