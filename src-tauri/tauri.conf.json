@@ -7,7 +7,7 @@
     "withGlobalTauri": true
   },
   "package": {
-    "productName": "mja",
+    "productName": "mjb",
     "version": "0.6.0"
   },
   "tauri": {
